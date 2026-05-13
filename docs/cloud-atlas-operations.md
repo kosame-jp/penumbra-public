@@ -55,7 +55,9 @@ sequence to Cloudflare R2 when configured, builds the static app, and uploads tw
 R2 is the preferred production path. The browser still reads a static `manifest.json` and versioned
 frame JSON files, but those forecast files are no longer committed to Git history on every cycle.
 The Git commit path remains available only as a fallback by setting `commit_forecast=true` manually
-or repository variable `PENUMBRA_CLOUD_COMMIT_FORECAST=true`.
+or repository variable `PENUMBRA_CLOUD_COMMIT_FORECAST=true`. Scheduled runs keep using the Git
+commit fallback until `PENUMBRA_CLOUD_R2_ENABLED=true` is set, so the deployed app does not go stale
+while R2 is being configured.
 
 Manual runs expose two operational switches:
 

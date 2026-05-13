@@ -47,7 +47,7 @@ jobs:
     env:
       FORECAST_RESOLUTION: ${{ github.event_name == 'workflow_dispatch' && inputs.resolution || '0.5' }}
       DEPLOY_PAGES: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy_pages || github.event_name != 'workflow_dispatch' && vars.PENUMBRA_CLOUD_STAGING_DEPLOY == 'true' }}
-      COMMIT_FORECAST: ${{ github.event_name == 'workflow_dispatch' && inputs.commit_forecast == true || github.event_name == 'schedule' && vars.PENUMBRA_CLOUD_COMMIT_FORECAST == 'true' }}
+      COMMIT_FORECAST: ${{ github.event_name == 'workflow_dispatch' && inputs.commit_forecast == true || github.event_name == 'schedule' && vars.PENUMBRA_CLOUD_R2_ENABLED != 'true' || github.event_name == 'schedule' && vars.PENUMBRA_CLOUD_COMMIT_FORECAST == 'true' }}
       PUBLISH_R2: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_r2 == true || github.event_name == 'schedule' && vars.PENUMBRA_CLOUD_R2_ENABLED == 'true' }}
       R2_BUCKET: ${{ vars.PENUMBRA_CLOUD_R2_BUCKET }}
       R2_PREFIX: ${{ vars.PENUMBRA_CLOUD_R2_PREFIX || 'data/cloud-atlas.forecast' }}
