@@ -1,0 +1,16 @@
+{
+  "version": "bad-cloud-atlas",
+  "generatedAtUtc": "2026-05-06T00:00:00.000Z",
+  "validAtUtc": "2026-05-06T00:00:00.000Z",
+  "resolutionDeg": 1,
+  "width": 4,
+  "height": 3,
+  "latitudeStartDeg": -1,
+  "longitudeStartDeg": -2,
+  "valuesEncoding": "uint8-cloud-cover-pct",
+  "source": {
+    "kind": "provisional-fixture",
+    "provenance": "unit test fixture"
+  },
+  "values": [0, 25, 50, 101]
+}

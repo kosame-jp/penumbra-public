@@ -1,0 +1,27 @@
+{
+  "version": "2026-04-30-sample",
+  "events": [
+    {
+      "id": "fixture-low-mag-001",
+      "provider": "fixture",
+      "eventTimeUtc": "2026-04-30T00:24:00Z",
+      "updatedTimeUtc": "2026-04-30T00:25:00Z",
+      "latitudeDeg": 35,
+      "longitudeDeg": 139,
+      "depthKm": 34,
+      "magnitude": 1.2,
+      "place": "Fixture low-magnitude event near the scanline"
+    },
+    {
+      "id": "fixture-old-001",
+      "provider": "fixture",
+      "eventTimeUtc": "2026-04-29T20:00:00Z",
+      "updatedTimeUtc": "2026-04-29T20:01:00Z",
+      "latitudeDeg": 11,
+      "longitudeDeg": 142,
+      "depthKm": 12,
+      "magnitude": 5.7,
+      "place": "Fixture event outside the 81-minute window"
+    }
+  ]
+}

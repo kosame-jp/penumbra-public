@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://penumbra.app/schemas/earthquake-event.schema.json",
+  "title": "PENUMBRA Canonical Earthquake Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "provider",
+    "eventTimeUtc",
+    "updatedTimeUtc",
+    "latitudeDeg",
+    "longitudeDeg",
+    "depthKm",
+    "magnitude"
+  ],
+  "properties": {
+    "id": { "type": "string" },
+    "provider": { "type": "string" },
+    "eventTimeUtc": { "type": "string", "format": "date-time" },
+    "updatedTimeUtc": { "type": "string", "format": "date-time" },
+    "latitudeDeg": { "type": "number", "minimum": -90, "maximum": 90 },
+    "longitudeDeg": { "type": "number", "minimum": -180, "maximum": 180 },
+    "depthKm": { "type": "number", "minimum": 0 },
+    "magnitude": { "type": "number" },
+    "place": { "type": "string" },
+    "sourceFeed": { "type": "string" },
+    "derived": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "eventAgeMinutes": { "type": "number", "minimum": 0 },
+        "within81MinuteWindow": { "type": "boolean" },
+        "scanlineWeight": { "type": "number", "minimum": 0, "maximum": 1 },
+        "registerMidi": { "type": "number" }
+      }
+    }
+  }
+}

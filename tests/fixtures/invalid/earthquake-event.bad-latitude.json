@@ -1,0 +1,10 @@
+{
+  "id": "invalid-quake",
+  "provider": "USGS",
+  "eventTimeUtc": "2026-04-29T10:24:00Z",
+  "updatedTimeUtc": "2026-04-29T10:29:00Z",
+  "latitudeDeg": 120,
+  "longitudeDeg": 142.5,
+  "depthKm": 34,
+  "magnitude": 5.7
+}

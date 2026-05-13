@@ -1,0 +1,19 @@
+{
+  "rewrites": [
+    {
+      "source": "/__penumbra-time",
+      "destination": "/api/penumbra-time"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/data/cloud-atlas.forecast/manifest.json",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate, max-age=0"
+        }
+      ]
+    }
+  ]
+}

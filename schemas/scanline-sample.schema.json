@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://penumbra.app/schemas/scanline-sample.schema.json",
+  "title": "PENUMBRA Canonical Scanline Sample",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "latitudeDeg",
+    "longitudeDeg",
+    "scanlineWeight",
+    "utcIso",
+    "cellId",
+    "effectiveElevationM",
+    "registerMidi",
+    "nightLightNorm",
+    "surfaceHardness01",
+    "openness01",
+    "waterRatio",
+    "forestRatio",
+    "roadDensityNorm",
+    "buildingDensityNorm",
+    "nightLightTopology",
+    "spatialChange01",
+    "spatialSlope01",
+    "weather",
+    "tuning",
+    "layers"
+  ],
+  "properties": {
+    "latitudeDeg": { "type": "number", "minimum": -90, "maximum": 90 },
+    "longitudeDeg": { "type": "number", "minimum": -180, "maximum": 180 },
+    "scanlineWeight": { "type": "number", "minimum": 0, "maximum": 1 },
+    "utcIso": { "type": "string", "format": "date-time" },
+    "cellId": { "type": "string" },
+    "effectiveElevationM": { "type": "number" },
+    "registerMidi": { "type": "number" },
+    "nightLightNorm": { "type": "number", "minimum": 0, "maximum": 1 },
+    "surfaceHardness01": { "type": "number", "minimum": 0, "maximum": 1 },
+    "openness01": { "type": "number", "minimum": 0, "maximum": 1 },
+    "waterRatio": { "type": "number", "minimum": 0, "maximum": 1 },
+    "forestRatio": { "type": "number", "minimum": 0, "maximum": 1 },
+    "roadDensityNorm": { "type": "number", "minimum": 0, "maximum": 1 },
+    "buildingDensityNorm": { "type": "number", "minimum": 0, "maximum": 1 },
+    "nightLightTopology": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "neighborMean01",
+        "neighborMax01",
+        "neighborLitCount01",
+        "isolation01",
+        "continuity01",
+        "edge01"
+      ],
+      "properties": {
+        "neighborMean01": { "type": "number", "minimum": 0, "maximum": 1 },
+        "neighborMax01": { "type": "number", "minimum": 0, "maximum": 1 },
+        "neighborLitCount01": { "type": "number", "minimum": 0, "maximum": 1 },
+        "isolation01": { "type": "number", "minimum": 0, "maximum": 1 },
+        "continuity01": { "type": "number", "minimum": 0, "maximum": 1 },
+        "edge01": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "spatialChange01": { "type": "number", "minimum": 0, "maximum": 1 },
+    "spatialSlope01": { "type": "number", "minimum": -1, "maximum": 1 },
+    "weather": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cloudCoverPct", "relativeHumidityPct", "windSpeedMps", "precipitationMm", "temperatureC"],
+      "properties": {
+        "cloudCoverPct": { "type": "number", "minimum": 0, "maximum": 100 },
+        "relativeHumidityPct": { "type": "number", "minimum": 0, "maximum": 100 },
+        "windSpeedMps": { "type": "number", "minimum": 0 },
+        "precipitationMm": { "type": "number", "minimum": 0 },
+        "temperatureC": { "type": "number" },
+        "pressureHpa": { "type": "number" }
+      }
+    },
+    "tuning": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gridKernelWeights", "scaleKernelWeights"],
+      "properties": {
+        "gridKernelWeights": {
+          "type": "object",
+          "additionalProperties": { "type": "number", "minimum": 0, "maximum": 1 }
+        },
+        "scaleKernelWeights": {
+          "type": "object",
+          "additionalProperties": { "type": "number", "minimum": 0, "maximum": 1 }
+        },
+        "dominantGridKernelId": { "type": "string" },
+        "dominantScaleKernelId": { "type": "string" },
+        "selectedScaleModeId": { "type": "string" }
+      }
+    },
+    "layers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["earth", "music", "quakes"],
+      "properties": {
+        "earth": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "active": { "type": "boolean" },
+            "brightness01": { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        },
+        "music": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["active", "gain01", "frequencyHz"],
+          "properties": {
+            "active": { "type": "boolean" },
+            "gain01": { "type": "number", "minimum": 0, "maximum": 1 },
+            "frequencyHz": { "type": "number", "exclusiveMinimum": 0 }
+          }
+        },
+        "quakes": {
+          "type": "array",
+          "items": { "$ref": "earthquake-event.schema.json" }
+        }
+      }
+    }
+  }
+}

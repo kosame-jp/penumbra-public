@@ -1,0 +1,110 @@
+name: Cloud Forecast Staging
+
+on:
+  schedule:
+    # GFS cycles are 00/06/12/18 UTC, but public availability lags.
+    # A 3-hour cadence tests refresh behavior without requiring exact cycle timing.
+    - cron: "17 */3 * * *"
+  workflow_dispatch:
+    inputs:
+      resolution:
+        description: "Forecast cloud atlas output resolution."
+        required: true
+        default: "0.5"
+        type: choice
+        options:
+          - "0.5"
+          - "1"
+      deploy_pages:
+        description: "Deploy the generated static app to GitHub Pages staging."
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: cloud-forecast-staging
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    name: Generate and validate cloud forecast
+    runs-on: ubuntu-latest
+    env:
+      FORECAST_RESOLUTION: ${{ github.event_name == 'workflow_dispatch' && inputs.resolution || '0.5' }}
+      DEPLOY_PAGES: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy_pages || github.event_name != 'workflow_dispatch' && vars.PENUMBRA_CLOUD_STAGING_DEPLOY == 'true' }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.19.0"
+          cache: npm
+
+      - name: Set up micromamba for wgrib2
+        uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-name: penumbra-gfs
+          create-args: >-
+            -c conda-forge
+            wgrib2
+          cache-environment: true
+
+      - name: Check wgrib2
+        shell: bash -el {0}
+        run: command -v wgrib2
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Inspect selected GFS source
+        shell: bash -el {0}
+        run: npm run inspect:gfs-cloud-source
+
+      - name: Generate forecast artifact
+        shell: bash -el {0}
+        run: |
+          if [ "$FORECAST_RESOLUTION" = "1" ]; then
+            npm run precompute:cloud-atlas:forecast-gfs:ops
+          else
+            npm run precompute:cloud-atlas:forecast-gfs:0p5:ops
+          fi
+
+      - name: Build static app with generated forecast
+        run: npm run build
+
+      - name: Upload cloud forecast artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloud-atlas-forecast-${{ github.run_id }}
+          path: public/data/cloud-atlas.forecast
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload static app artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: penumbra-static-staging-${{ github.run_id }}
+          path: dist
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Configure GitHub Pages
+        if: env.DEPLOY_PAGES == 'true'
+        uses: actions/configure-pages@v5
+
+      - name: Upload GitHub Pages artifact
+        if: env.DEPLOY_PAGES == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - name: Deploy GitHub Pages staging
+        if: env.DEPLOY_PAGES == 'true'
+        uses: actions/deploy-pages@v4

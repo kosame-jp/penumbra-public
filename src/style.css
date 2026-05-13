@@ -1,0 +1,805 @@
+:root {
+  --penumbra-space: #04080d;
+  --penumbra-ui-text: #d6ded8;
+  --penumbra-ui-muted: #aebcb7;
+  --penumbra-ui-panel: rgba(4, 8, 13, 0.7);
+  --penumbra-ui-rule: rgba(214, 222, 216, 0.18);
+
+  color-scheme: dark;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--penumbra-space);
+  color: var(--penumbra-ui-text);
+}
+
+@font-face {
+  font-family: "Cormorant SC";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/cormorant-sc-regular-latin.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF,
+    U+0131,
+    U+0152-0153,
+    U+02BB-02BC,
+    U+02C6,
+    U+02DA,
+    U+02DC,
+    U+0304,
+    U+0308,
+    U+0329,
+    U+2000-206F,
+    U+20AC,
+    U+2122,
+    U+2191,
+    U+2193,
+    U+2212,
+    U+2215,
+    U+FEFF,
+    U+FFFD;
+}
+
+@font-face {
+  font-family: "Cormorant SC";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/cormorant-sc-medium-latin.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF,
+    U+0131,
+    U+0152-0153,
+    U+02BB-02BC,
+    U+02C6,
+    U+02DA,
+    U+02DC,
+    U+0304,
+    U+0308,
+    U+0329,
+    U+2000-206F,
+    U+20AC,
+    U+2122,
+    U+2191,
+    U+2193,
+    U+2212,
+    U+2215,
+    U+FEFF,
+    U+FFFD;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow: hidden;
+}
+
+.penumbra {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: var(--penumbra-space);
+}
+
+.penumbra--stream {
+  cursor: none;
+}
+
+.penumbra--capture {
+  display: grid;
+  place-items: center;
+}
+
+.penumbra__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transition: opacity 1.2s ease;
+}
+
+.penumbra__hud {
+  --penumbra-hud-label-size: 10px;
+  --penumbra-hud-label-tracking: 0.12em;
+  --penumbra-hud-value-size: 11px;
+  --penumbra-hud-value-tracking: 0.055em;
+  --penumbra-hud-line-height: 1.35;
+
+  position: absolute;
+  top: 20px;
+  left: 22px;
+  right: 22px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  pointer-events: none;
+  color: color-mix(in srgb, var(--penumbra-ui-text) 90%, transparent);
+  font: var(--penumbra-hud-value-size) / var(--penumbra-hud-line-height) ui-monospace, SFMono-Regular,
+    Menlo, Consolas, monospace;
+  font-feature-settings:
+    "tnum" 1,
+    "zero" 1;
+  font-variant-numeric: tabular-nums slashed-zero;
+  letter-spacing: var(--penumbra-hud-value-tracking);
+  text-transform: uppercase;
+  text-shadow: 0 0 14px color-mix(in srgb, var(--penumbra-space) 76%, transparent);
+  transition: opacity 2.1s ease;
+}
+
+.penumbra__hud-cluster {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.penumbra__hud-cluster--right {
+  display: grid;
+  grid-template-columns: max-content 8px max-content;
+  grid-auto-rows: min-content;
+  align-items: center;
+  justify-content: end;
+  gap: 6px 6px;
+}
+
+.penumbra__hud-readout {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: min(52vw, 380px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.penumbra__hud-readout--right {
+  display: contents;
+  text-align: right;
+}
+
+.penumbra__hud-readout--right .penumbra__hud-label {
+  grid-column: 1;
+  justify-self: start;
+}
+
+.penumbra__hud-readout--right .penumbra__hud-gauge-slot,
+.penumbra__hud-readout--right .penumbra__declination-gauge {
+  grid-column: 2;
+  justify-self: center;
+}
+
+.penumbra__hud-readout--right .penumbra__hud-value {
+  grid-column: 3;
+  justify-self: end;
+}
+
+.penumbra__hud-label {
+  color: color-mix(in srgb, var(--penumbra-ui-muted) 58%, transparent);
+  font-size: var(--penumbra-hud-label-size);
+  line-height: var(--penumbra-hud-line-height);
+  letter-spacing: var(--penumbra-hud-label-tracking);
+}
+
+.penumbra__hud-value {
+  color: color-mix(in srgb, var(--penumbra-ui-text) 92%, transparent);
+  font-size: var(--penumbra-hud-value-size);
+  line-height: var(--penumbra-hud-line-height);
+  letter-spacing: var(--penumbra-hud-value-tracking);
+}
+
+.penumbra__declination-gauge {
+  position: relative;
+  display: inline-block;
+  width: 8px;
+  height: 28px;
+  flex: 0 0 auto;
+  opacity: 0.75;
+}
+
+.penumbra__declination-gauge::before,
+.penumbra__declination-gauge::after {
+  position: absolute;
+  left: 50%;
+  content: "";
+  transform: translateX(-50%);
+}
+
+.penumbra__declination-gauge::before {
+  top: 1px;
+  width: 1px;
+  height: calc(100% - 2px);
+  background: color-mix(in srgb, var(--penumbra-ui-muted) 42%, transparent);
+}
+
+.penumbra__declination-gauge::after {
+  top: var(--penumbra-dec-y, 50%);
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--penumbra-ui-text) 84%, transparent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--penumbra-ui-text) 28%, transparent);
+  transform: translate(-50%, -50%);
+}
+
+.penumbra__debug-panel {
+  position: absolute;
+  left: 18px;
+  bottom: 18px;
+  max-width: min(420px, calc(100vw - 36px));
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--penumbra-ui-rule);
+  border-radius: 6px;
+  background: var(--penumbra-ui-panel);
+  color: color-mix(in srgb, var(--penumbra-ui-muted) 88%, white 12%);
+  font: 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-feature-settings:
+    "tnum" 1,
+    "zero" 1;
+  font-variant-numeric: tabular-nums slashed-zero;
+  letter-spacing: 0;
+  line-height: 1.5;
+  pointer-events: none;
+  white-space: pre-wrap;
+}
+
+.penumbra__debug-root {
+  position: absolute;
+  left: 18px;
+  bottom: 260px;
+  width: 156px;
+  min-height: 102px;
+  padding: 8px 9px;
+  border: 0;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--penumbra-ui-panel) 92%, transparent);
+  color: color-mix(in srgb, var(--penumbra-ui-text) 90%, transparent);
+  font: 11px/1.25 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-feature-settings:
+    "tnum" 1,
+    "zero" 1;
+  font-variant-numeric: tabular-nums slashed-zero;
+  letter-spacing: 0;
+  pointer-events: none;
+  transition: opacity 2.1s ease;
+}
+
+.penumbra__debug-root--standalone {
+  bottom: 18px;
+}
+
+.penumbra__debug-root-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+}
+
+.penumbra__debug-root-metric {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.penumbra__debug-root-label {
+  color: color-mix(in srgb, var(--penumbra-ui-muted) 66%, transparent);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+.penumbra__debug-root-value {
+  color: color-mix(in srgb, var(--penumbra-ui-text) 94%, white 6%);
+  font-size: 12px;
+  line-height: 1.05;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.penumbra__debug-root-waveform {
+  width: 100%;
+  height: 22px;
+  overflow: visible;
+}
+
+.penumbra__debug-root-waveform-zero,
+.penumbra__debug-root-waveform-trace {
+  fill: none;
+}
+
+.penumbra__debug-root-waveform-zero {
+  stroke: color-mix(in srgb, var(--penumbra-ui-muted) 34%, transparent);
+  stroke-width: 0.045;
+}
+
+.penumbra__debug-root-waveform-trace {
+  stroke: color-mix(in srgb, var(--penumbra-ui-text) 88%, white 12%);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 0.12;
+}
+
+.penumbra__safety-copy {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  border: 0;
+  white-space: pre-wrap;
+}
+
+.penumbra__stream-title {
+  position: absolute;
+  left: 50%;
+  bottom: max(28px, env(safe-area-inset-bottom));
+  z-index: 3;
+  padding-left: 0.44em;
+  color: color-mix(in srgb, var(--penumbra-ui-text) 68%, #9db9d0 20%);
+  font: 500 18px/1 "Cormorant SC", "Iowan Old Style", Baskerville, Georgia, serif;
+  font-feature-settings:
+    "tnum" 1,
+    "zero" 1;
+  font-variant-numeric: tabular-nums slashed-zero;
+  letter-spacing: 0.44em;
+  opacity: 0;
+  pointer-events: none;
+  text-rendering: geometricPrecision;
+  text-shadow: 0 0 16px color-mix(in srgb, #9bbbd4 12%, transparent);
+  transform: translateX(-50%);
+  transition: opacity 0.34s ease;
+}
+
+@media (max-width: 620px) {
+  .penumbra__stream-title {
+    bottom: max(24px, env(safe-area-inset-bottom));
+    font-size: 16px;
+    letter-spacing: 0.38em;
+    padding-left: 0.38em;
+  }
+}
+
+.penumbra__entry-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  display: grid;
+  place-items: center;
+  background: var(--penumbra-space);
+  opacity: 1;
+  transition: opacity 0.9s ease;
+}
+
+.penumbra__entry-button {
+  padding: 0 0 0 0.46em;
+  border: 0;
+  background: transparent;
+  color: color-mix(in srgb, var(--penumbra-ui-text) 78%, #a9bfd0 14%);
+  cursor: pointer;
+  font: 500 30px/1 "Cormorant SC", "Iowan Old Style", Baskerville, Georgia, serif;
+  letter-spacing: 0.46em;
+  opacity: 0;
+  text-rendering: geometricPrecision;
+  text-shadow:
+    0 0 18px color-mix(in srgb, #9fbfd8 10%, transparent),
+    0 0 44px color-mix(in srgb, #9fbfd8 8%, transparent);
+  transition:
+    color 0.28s ease,
+    opacity 0.28s ease,
+    text-shadow 0.28s ease;
+}
+
+.penumbra[data-logo-font="loading"] .penumbra__entry-button {
+  pointer-events: none;
+}
+
+.penumbra[data-logo-font="ready"] .penumbra__stream-title {
+  opacity: 0.68;
+}
+
+.penumbra[data-logo-font="ready"] .penumbra__entry-button {
+  opacity: 0.82;
+}
+
+.penumbra[data-logo-font="ready"] .penumbra__entry-button:hover:not(:disabled),
+.penumbra[data-logo-font="ready"] .penumbra__entry-button:focus-visible {
+  color: color-mix(in srgb, var(--penumbra-ui-text) 90%, white 8%);
+  opacity: 0.94;
+  outline: none;
+  text-shadow:
+    0 0 22px color-mix(in srgb, #b7d1e4 16%, transparent),
+    0 0 54px color-mix(in srgb, #b7d1e4 12%, transparent);
+}
+
+.penumbra__entry-button:disabled {
+  cursor: default;
+}
+
+.penumbra[data-logo-font="ready"] .penumbra__entry-button[data-state="starting"] {
+  animation: penumbra-entry-pulse 3.2s ease-in-out infinite;
+}
+
+.penumbra[data-entry-state="idle"] .penumbra__canvas,
+.penumbra[data-entry-state="starting"] .penumbra__canvas,
+.penumbra[data-entry-state="idle"] .penumbra__hud,
+.penumbra[data-entry-state="starting"] .penumbra__hud,
+.penumbra[data-entry-state="idle"] .penumbra__debug-root--standalone,
+.penumbra[data-entry-state="starting"] .penumbra__debug-root--standalone,
+.penumbra[data-entry-state="idle"] .penumbra__audio-button,
+.penumbra[data-entry-state="starting"] .penumbra__audio-button {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.penumbra[data-entry-state="entered"] .penumbra__entry-overlay {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.penumbra[data-entry-state] .penumbra__fallback-status {
+  z-index: 12;
+}
+
+@keyframes penumbra-entry-pulse {
+  0%,
+  100% {
+    opacity: 0.58;
+  }
+
+  50% {
+    opacity: 0.9;
+  }
+}
+
+@media (max-width: 620px) {
+  .penumbra__entry-button {
+    padding-left: 0.38em;
+    font-size: 24px;
+    letter-spacing: 0.38em;
+  }
+}
+
+.penumbra__fallback-status {
+  position: absolute;
+  top: 76px;
+  left: 22px;
+  z-index: 4;
+  display: flex;
+  width: min(340px, calc(100vw - 44px));
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+  font: 10px/1.35 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-feature-settings:
+    "tnum" 1,
+    "zero" 1;
+  font-variant-numeric: tabular-nums slashed-zero;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.penumbra__fallback-status[hidden] {
+  display: none;
+}
+
+.penumbra__fallback-status-row {
+  padding: 8px 9px;
+  border-left: 1px solid color-mix(in srgb, var(--penumbra-ui-muted) 34%, transparent);
+  background: color-mix(in srgb, var(--penumbra-space) 76%, transparent);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--penumbra-space) 58%, transparent);
+}
+
+.penumbra__fallback-status-row[data-severity="fatal"],
+.penumbra__fallback-status-row[data-severity="audio-muted"] {
+  border-left-color: color-mix(in srgb, #f0c17d 72%, transparent);
+}
+
+.penumbra__fallback-status-meta {
+  margin-bottom: 4px;
+  color: color-mix(in srgb, var(--penumbra-ui-muted) 54%, transparent);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+}
+
+.penumbra__fallback-status-label {
+  color: color-mix(in srgb, var(--penumbra-ui-text) 94%, white 6%);
+  font-size: 10px;
+}
+
+.penumbra__fallback-status-message {
+  margin-top: 3px;
+  color: color-mix(in srgb, var(--penumbra-ui-muted) 72%, transparent);
+  font-size: 9px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.penumbra__audio-button {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  min-width: 116px;
+  min-height: 36px;
+  border: 1px solid color-mix(in srgb, var(--penumbra-ui-text) 34%, transparent);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--penumbra-space) 72%, transparent);
+  color: var(--penumbra-ui-text);
+  font: 11px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-feature-settings:
+    "tnum" 1,
+    "zero" 1;
+  font-variant-numeric: tabular-nums slashed-zero;
+  letter-spacing: 0.075em;
+  text-transform: uppercase;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    opacity 2.1s ease;
+}
+
+.penumbra__audio-button:disabled {
+  opacity: 0.58;
+}
+
+.penumbra__capture-panel {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: max-content max-content;
+  gap: 7px 10px;
+  align-items: center;
+  min-width: 176px;
+  padding: 10px 11px;
+  border: 1px solid color-mix(in srgb, var(--penumbra-ui-text) 22%, transparent);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--penumbra-space) 74%, transparent);
+  color: color-mix(in srgb, var(--penumbra-ui-text) 88%, transparent);
+  font: 10px/1.25 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-feature-settings:
+    "tnum" 1,
+    "zero" 1;
+  font-variant-numeric: tabular-nums slashed-zero;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.penumbra__capture-title {
+  color: color-mix(in srgb, var(--penumbra-ui-muted) 68%, transparent);
+}
+
+.penumbra__capture-button {
+  grid-row: span 2;
+  grid-column: 2;
+  min-height: 28px;
+  padding: 0 10px;
+  border: 1px solid color-mix(in srgb, var(--penumbra-ui-text) 26%, transparent);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--penumbra-space) 66%, transparent);
+  color: color-mix(in srgb, var(--penumbra-ui-text) 92%, transparent);
+  font: inherit;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.penumbra__capture-status {
+  color: color-mix(in srgb, var(--penumbra-ui-muted) 56%, transparent);
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+
+.penumbra--stream .penumbra__audio-button[aria-pressed="true"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.penumbra[data-ui-idle="on"] .penumbra__hud,
+.penumbra[data-ui-idle="on"] .penumbra__debug-root--standalone,
+.penumbra[data-ui-idle="on"] .penumbra__audio-button[aria-pressed="true"] {
+  opacity: 0;
+}
+
+.penumbra[data-ui-idle="on"] .penumbra__audio-button[aria-pressed="true"] {
+  pointer-events: none;
+}
+
+.penumbra__audio-tuning {
+  position: absolute;
+  top: 76px;
+  right: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(348px, calc(100vw - 36px));
+  max-height: calc(100vh - 116px);
+  padding: 12px;
+  overflow: auto;
+  border: 1px solid var(--penumbra-ui-rule);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--penumbra-ui-panel) 95%, transparent);
+  color: color-mix(in srgb, var(--penumbra-ui-text) 90%, transparent);
+  font: 11px/1.25 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-feature-settings:
+    "tnum" 1,
+    "zero" 1;
+  font-variant-numeric: tabular-nums slashed-zero;
+  letter-spacing: 0;
+  pointer-events: auto;
+}
+
+.penumbra__audio-tuning-head,
+.penumbra__audio-tuning-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.penumbra__audio-tuning-title {
+  color: color-mix(in srgb, var(--penumbra-ui-text) 94%, white 6%);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+}
+
+.penumbra__audio-tuning-mode {
+  color: color-mix(in srgb, var(--penumbra-ui-muted) 52%, transparent);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.penumbra__audio-tuning-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.penumbra__audio-tuning-row {
+  display: grid;
+  grid-template-columns: 104px minmax(96px, 1fr) 58px;
+  gap: 8px;
+  align-items: center;
+}
+
+.penumbra__audio-tuning-label {
+  overflow: hidden;
+  color: color-mix(in srgb, var(--penumbra-ui-muted) 72%, transparent);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.penumbra__audio-tuning-slider {
+  width: 100%;
+  accent-color: color-mix(in srgb, var(--penumbra-ui-text) 70%, #86d7ff 30%);
+}
+
+.penumbra__audio-tuning-value {
+  color: color-mix(in srgb, var(--penumbra-ui-text) 88%, transparent);
+  text-align: right;
+}
+
+.penumbra__audio-diagnostics {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--penumbra-ui-text) 13%, transparent);
+}
+
+.penumbra__audio-diagnostics-title {
+  color: color-mix(in srgb, var(--penumbra-ui-text) 86%, transparent);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+}
+
+.penumbra__audio-diagnostics-note {
+  margin-top: -3px;
+  color: color-mix(in srgb, var(--penumbra-ui-muted) 48%, transparent);
+  font-size: 9px;
+  line-height: 1.35;
+}
+
+.penumbra__audio-diagnostics-row {
+  display: grid;
+  grid-template-columns: 1fr 30px;
+  gap: 10px;
+  align-items: center;
+  min-height: 24px;
+}
+
+.penumbra__audio-diagnostics-label {
+  overflow: hidden;
+  color: color-mix(in srgb, var(--penumbra-ui-muted) 76%, transparent);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.penumbra__audio-diagnostics-checkbox {
+  justify-self: center;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: color-mix(in srgb, var(--penumbra-ui-text) 68%, #86d7ff 32%);
+}
+
+.penumbra__audio-diagnostics-select {
+  justify-self: stretch;
+  min-height: 24px;
+  border: 1px solid color-mix(in srgb, var(--penumbra-ui-text) 18%, transparent);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--penumbra-space) 76%, transparent);
+  color: color-mix(in srgb, var(--penumbra-ui-text) 90%, transparent);
+  font: inherit;
+}
+
+.penumbra__audio-tuning-button {
+  min-height: 28px;
+  padding: 0 10px;
+  border: 1px solid color-mix(in srgb, var(--penumbra-ui-text) 24%, transparent);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--penumbra-space) 68%, transparent);
+  color: color-mix(in srgb, var(--penumbra-ui-text) 88%, transparent);
+  font: inherit;
+}
+
+.penumbra__audio-tuning-export {
+  width: 100%;
+  min-height: 118px;
+  resize: vertical;
+  border: 1px solid color-mix(in srgb, var(--penumbra-ui-text) 16%, transparent);
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--penumbra-space) 82%, transparent);
+  color: color-mix(in srgb, var(--penumbra-ui-text) 86%, transparent);
+  font: 10px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+@media (width <= 520px) {
+  .penumbra__hud {
+    --penumbra-hud-label-size: 9px;
+    --penumbra-hud-value-size: 10px;
+
+    top: 14px;
+    left: 14px;
+    right: 14px;
+    gap: 12px;
+  }
+
+  .penumbra__hud-readout {
+    gap: 6px;
+  }
+
+  .penumbra__declination-gauge {
+    height: 23px;
+  }
+
+  .penumbra__audio-tuning {
+    top: 74px;
+    right: 14px;
+    width: calc(100vw - 28px);
+  }
+
+  .penumbra__capture-panel {
+    right: 14px;
+    bottom: 14px;
+  }
+
+  .penumbra__audio-tuning-row {
+    grid-template-columns: 92px minmax(84px, 1fr) 54px;
+  }
+}

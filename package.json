@@ -1,0 +1,59 @@
+{
+  "name": "penumbra-earth-sequencer",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "PENUMBRA — Earth Sequencer canonical browser implementation.",
+  "engines": {
+    "node": ">=20.11.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "dev:https": "PENUMBRA_DEV_HTTPS=1 PENUMBRA_DEV_HOST=0.0.0.0 PENUMBRA_DEV_PORT=5174 vite --host 0.0.0.0 --port 5174",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "check:visual": "node scripts/checks/visual-smoke.mjs",
+    "check:perf": "node scripts/checks/perf-smoke.mjs",
+    "check:cloud-atlas:forecast": "node scripts/checks/validate-cloud-atlas-forecast.mjs",
+    "check:cloud-atlas:ops": "node scripts/checks/validate-cloud-atlas-forecast.mjs --require-current --max-hold-hours 6",
+    "inspect:gfs-cloud-source": "node scripts/precompute/inspect-gfs-cloud-source.mjs --forecast-hours 0,3,6,9",
+    "validate:fixtures": "vitest run tests/unit/schema-validation.test.ts",
+    "precompute:terrain-worldgrid": "node scripts/precompute/build-terrain-worldgrid.mjs --step 5 --zoom 5 --output public/data/worldgrid.terrain-seed.json",
+    "precompute:visual-surface-worldgrid": "node scripts/precompute/build-terrain-worldgrid.mjs --step 1 --zoom 4 --output public/data/worldgrid.visual-surface-1deg.json",
+    "precompute:contact-worldgrid:1deg": "node scripts/precompute/enrich-worldgrid-nightlights.mjs --input public/data/worldgrid.visual-surface-1deg.json --output public/data/worldgrid.contact-1deg.json --zoom 4 --time 2016-01-01",
+    "precompute:nightlights-worldgrid": "node scripts/precompute/enrich-worldgrid-nightlights.mjs --input public/data/worldgrid.terrain-seed.json --output public/data/worldgrid.production-seed.json --zoom 4 --time 2016-01-01",
+    "precompute:osm-density-worldgrid": "node scripts/precompute/enrich-worldgrid-osm-overpass.mjs --input public/data/worldgrid.production-seed.json --output public/data/worldgrid.production-seed.json --sample-grid 1 --sample-radius-deg 0.12 --density-reference-area-km2 1000 --request-delay-ms 1100",
+    "precompute:cloud-atlas:fixture": "node scripts/precompute/build-cloud-atlas-fixture.mjs",
+    "precompute:cloud-atlas:openmeteo": "node scripts/precompute/build-cloud-atlas-openmeteo.mjs --output public/data/cloud-atlas.current.json --step 1 --source-step 10 --batch-size 50 --request-delay-ms 1000 --max-retries 4 --retry-delay-ms 15000",
+    "precompute:cloud-atlas:forecast-openmeteo": "node scripts/precompute/build-cloud-atlas-forecast-openmeteo.mjs --output-dir public/data/cloud-atlas.forecast --step 1 --source-step 10 --forecast-hours 0,3,6,9 --batch-size 50 --request-delay-ms 1000 --max-retries 4 --retry-delay-ms 15000 --atomic-publish --retain-generations 8",
+    "precompute:cloud-atlas:forecast-gfs": "node scripts/precompute/build-cloud-atlas-forecast-gfs.mjs --output-dir public/data/cloud-atlas.forecast --step 1 --forecast-hours 0,3,6,9 --atomic-publish --retain-generations 8",
+    "precompute:cloud-atlas:forecast-gfs:0p5": "node scripts/precompute/build-cloud-atlas-forecast-gfs.mjs --output-dir public/data/cloud-atlas.forecast --step 0.5 --forecast-hours 0,3,6,9 --atomic-publish --retain-generations 8",
+    "precompute:cloud-atlas:forecast-gfs:ops": "npm run precompute:cloud-atlas:forecast-gfs && npm run check:cloud-atlas:forecast && npm run check:cloud-atlas:ops",
+    "precompute:cloud-atlas:forecast-gfs:0p5:ops": "npm run precompute:cloud-atlas:forecast-gfs:0p5 && npm run check:cloud-atlas:forecast && npm run check:cloud-atlas:ops",
+    "precompute:worldgrid:base": "npm run precompute:terrain-worldgrid && npm run precompute:nightlights-worldgrid",
+    "precompute:worldgrid": "npm run precompute:worldgrid:base && npm run precompute:osm-density-worldgrid"
+  },
+  "dependencies": {
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
+    "astronomy-engine": "2.1.19",
+    "suncalc": "1.9.0",
+    "three": "0.184.0",
+    "tone": "15.1.22"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.38.0",
+    "@types/node": "20.19.39",
+    "@types/suncalc": "1.9.2",
+    "@types/three": "0.184.0",
+    "eslint": "9.38.0",
+    "playwright-core": "1.59.1",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.55.0",
+    "vite": "6.4.2",
+    "vitest": "4.1.5"
+  }
+}

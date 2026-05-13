@@ -1,0 +1,60 @@
+export const PENUMBRA_VISUAL_PALETTE = {
+  scene: {
+    space: "#030912",
+  },
+  atmosphere: {
+    sun: "#d8cca4",
+    hemisphereSky: "#b9cbc8",
+    hemisphereGround: "#061117",
+  },
+  globe: {
+    dayTint: "#82a6a3",
+    nightTint: "#010506",
+    horizonTint: "#305866",
+    limbGlow: "#b9efff",
+  },
+  terrain: {
+    deepOcean: "#0f2f68",
+    shallowOcean: "#2369ad",
+    oceanDepthBands: [
+      "#2f7fca",
+      "#2a73bd",
+      "#2568b0",
+      "#205da3",
+      "#1b5296",
+      "#17488a",
+      "#133b78",
+      "#0f2f68",
+    ],
+    ice: "#c4ccc2",
+    urban: "#8f846a",
+    highLand: "#a9a98f",
+    mountain: "#81775b",
+    forest: "#3f6451",
+    lowLand: "#5f7654",
+    register: {
+      deepOcean: "#10366f",
+      shallowOcean: "#246daf",
+      lowLand: "#4f6d55",
+      upland: "#707f60",
+      mountain: "#83765b",
+      highLand: "#a4a181",
+      ice: "#c4c9be",
+    },
+  },
+  human: {
+    core: "#e0b85f",
+    peak: "#ffe48f",
+  },
+  quake: {
+    core: "#49aee4",
+    peak: "#b9f2ff",
+  },
+  weather: {
+    cloudShell: "#f5fafc",
+    cloudBase: "#bdc8c1",
+    cloudPeak: "#e1e8e2",
+    precipitation: "#79b5c2",
+    windShimmer: "#c4f2ff",
+  },
+} as const;

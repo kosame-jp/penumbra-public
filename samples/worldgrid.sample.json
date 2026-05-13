@@ -1,0 +1,72 @@
+{
+  "version": "2026-04-29-sample",
+  "generatedAtUtc": "2026-04-29T12:00:00Z",
+  "cellSizeDegrees": 1,
+  "sources": {
+    "osm": "sample-fixture",
+    "nightlights": "sample-fixture",
+    "terrain": "sample-fixture"
+  },
+  "stats": {
+    "nightLight": { "min": 0, "max": 320, "p95": 45, "p99": 180, "p99_5": 240 },
+    "roadLengthKm": { "min": 0, "max": 1800, "p95": 220, "p99": 640 },
+    "buildingCount": { "min": 0, "max": 980000, "p95": 12000, "p99": 85000 },
+    "waterRatio": { "min": 0, "max": 1 },
+    "forestRatio": { "min": 0, "max": 1 },
+    "elevationM": { "min": -200, "max": 8849, "p95": 2600, "p99": 5200 },
+    "bathymetryM": { "min": -10994, "max": 0, "p95": -200, "p99": -4500 }
+  },
+  "cells": [
+    {
+      "id": "tokyo-bay-sample",
+      "latCenterDeg": 35.5,
+      "lonCenterDeg": 139.5,
+      "landClass": "land",
+      "terrainClass": "urban",
+      "elevationM": 35,
+      "bathymetryM": 0,
+      "roadLengthKm": 540,
+      "buildingCount": 82000,
+      "waterRatio": 0.12,
+      "forestRatio": 0.05,
+      "nightLightMean": 210,
+      "surfaceHardness01": 0.95,
+      "openness01": 0.42,
+      "notes": "dense urban coastal lowland"
+    },
+    {
+      "id": "himalaya-sample",
+      "latCenterDeg": 28.0,
+      "lonCenterDeg": 86.5,
+      "landClass": "land",
+      "terrainClass": "high_mountain",
+      "elevationM": 6500,
+      "bathymetryM": 0,
+      "roadLengthKm": 14,
+      "buildingCount": 15,
+      "waterRatio": 0.01,
+      "forestRatio": 0.08,
+      "nightLightMean": 0.4,
+      "surfaceHardness01": 0.88,
+      "openness01": 0.94,
+      "notes": "high-altitude sparse human activity"
+    },
+    {
+      "id": "mariana-sample",
+      "latCenterDeg": 11.0,
+      "lonCenterDeg": 142.0,
+      "landClass": "ocean",
+      "terrainClass": "deep_ocean",
+      "elevationM": 0,
+      "bathymetryM": -9600,
+      "roadLengthKm": 0,
+      "buildingCount": 0,
+      "waterRatio": 1,
+      "forestRatio": 0,
+      "nightLightMean": 0,
+      "surfaceHardness01": 0.05,
+      "openness01": 1,
+      "notes": "deep ocean trench fixture"
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "latitudeDeg": 35,
+  "longitudeDeg": 139,
+  "scanlineWeight": 0.82,
+  "utcIso": "2026-04-29T10:30:00Z",
+  "cellId": "tokyo-bay-sample",
+  "effectiveElevationM": 35,
+  "registerMidi": 48.7,
+  "nightLightNorm": 0.91,
+  "surfaceHardness01": 0.95,
+  "openness01": 0.42,
+  "waterRatio": 0.28,
+  "forestRatio": 0.04,
+  "roadDensityNorm": 0.74,
+  "buildingDensityNorm": 0.86,
+  "nightLightTopology": {
+    "neighborMean01": 0.62,
+    "neighborMax01": 0.92,
+    "neighborLitCount01": 0.75,
+    "isolation01": 0.08,
+    "continuity01": 0.68,
+    "edge01": 0.24
+  },
+  "spatialChange01": 0.37,
+  "spatialSlope01": 0.12,
+  "weather": {
+    "cloudCoverPct": 64,
+    "relativeHumidityPct": 72,
+    "windSpeedMps": 4.2,
+    "precipitationMm": 0.2,
+    "temperatureC": 18.2,
+    "pressureHpa": 1008.4
+  },
+  "tuning": {
+    "gridKernelWeights": {
+      "12tet": 0.06,
+      "maqam": 0.02,
+      "indian": 0.05,
+      "slendro_pelog": 0.01
+    },
+    "scaleKernelWeights": {
+      "east_asia_pentatonic": 0.84,
+      "church_modes": 0.04,
+      "west_african_blues": 0.03,
+      "andean_pentatonic": 0.09
+    },
+    "dominantGridKernelId": "12tet",
+    "dominantScaleKernelId": "east_asia_pentatonic",
+    "selectedScaleModeId": "yang"
+  },
+  "layers": {
+    "earth": {
+      "active": true,
+      "brightness01": 0.48
+    },
+    "music": {
+      "active": true,
+      "gain01": 0.83,
+      "frequencyHz": 130.8127826502993
+    },
+    "quakes": [
+      {
+        "id": "usgs-sample-001",
+        "provider": "USGS",
+        "eventTimeUtc": "2026-04-29T10:24:00Z",
+        "updatedTimeUtc": "2026-04-29T10:29:00Z",
+        "latitudeDeg": 38.2,
+        "longitudeDeg": 142.5,
+        "depthKm": 34,
+        "magnitude": 5.7
+      }
+    ]
+  }
+}

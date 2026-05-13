@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://penumbra.app/schemas/worldgrid.schema.json",
+  "title": "PENUMBRA World Grid",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "generatedAtUtc", "cellSizeDegrees", "stats", "cells"],
+  "properties": {
+    "version": { "type": "string" },
+    "generatedAtUtc": { "type": "string", "format": "date-time" },
+    "cellSizeDegrees": { "type": "number", "exclusiveMinimum": 0, "maximum": 5 },
+    "sources": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "stats": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nightLight", "roadLengthKm", "buildingCount", "elevationM", "bathymetryM"],
+      "properties": {
+        "nightLight": { "$ref": "#/$defs/statBlock" },
+        "roadLengthKm": { "$ref": "#/$defs/statBlock" },
+        "buildingCount": { "$ref": "#/$defs/statBlock" },
+        "waterRatio": { "$ref": "#/$defs/statBlock" },
+        "forestRatio": { "$ref": "#/$defs/statBlock" },
+        "elevationM": { "$ref": "#/$defs/statBlock" },
+        "bathymetryM": { "$ref": "#/$defs/statBlock" }
+      }
+    },
+    "cells": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/cell" },
+      "minItems": 1
+    }
+  },
+  "$defs": {
+    "statBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["min", "max"],
+      "properties": {
+        "min": { "type": "number" },
+        "max": { "type": "number" },
+        "p95": { "type": "number" },
+        "p99": { "type": "number" },
+        "p99_5": { "type": "number" }
+      }
+    },
+    "ratio01": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "cell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "latCenterDeg",
+        "lonCenterDeg",
+        "landClass",
+        "elevationM",
+        "bathymetryM",
+        "roadLengthKm",
+        "buildingCount",
+        "waterRatio",
+        "forestRatio",
+        "nightLightMean",
+        "surfaceHardness01",
+        "openness01"
+      ],
+      "properties": {
+        "id": { "type": "string" },
+        "latCenterDeg": { "type": "number", "minimum": -90, "maximum": 90 },
+        "lonCenterDeg": { "type": "number", "minimum": -180, "maximum": 180 },
+        "landClass": {
+          "type": "string",
+          "enum": ["ocean", "coast", "land", "ice"]
+        },
+        "terrainClass": {
+          "type": "string",
+          "enum": [
+            "deep_ocean",
+            "ocean",
+            "plain",
+            "hill",
+            "mountain",
+            "high_mountain",
+            "forest",
+            "desert",
+            "wetland",
+            "urban",
+            "ice",
+            "mixed"
+          ]
+        },
+        "elevationM": { "type": "number" },
+        "bathymetryM": { "type": "number" },
+        "roadLengthKm": { "type": "number", "minimum": 0 },
+        "buildingCount": { "type": "number", "minimum": 0 },
+        "waterRatio": { "$ref": "#/$defs/ratio01" },
+        "forestRatio": { "$ref": "#/$defs/ratio01" },
+        "nightLightMean": { "type": "number", "minimum": 0 },
+        "surfaceHardness01": { "$ref": "#/$defs/ratio01" },
+        "openness01": { "$ref": "#/$defs/ratio01" },
+        "notes": { "type": "string" }
+      }
+    }
+  }
+}

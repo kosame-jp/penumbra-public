@@ -1,0 +1,60 @@
+# Dependencies
+node_modules/
+yarn.lock
+pnpm-lock.yaml
+
+# Build output
+dist/
+build/
+.cache/
+.parcel-cache/
+.vite/
+.vercel/
+
+# Environment
+.env
+.env.*
+*.env
+.cert/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary
+tmp/
+.tmp/
+*.tmp
+
+# Local/manual backups. These are useful while iterating, but should not
+# be published as source artifacts or deployed to Vercel.
+.local-backups/
+*.bak
+**/*_[0-9][0-9][0-9][0-9][0-9][0-9]_*
+
+# Cloud forecast generations are operational artifacts. Commit the active
+# manifest and force-add the frame files it references; keep stale aliases and
+# retained generations out of the source history.
+public/data/cloud-atlas.forecast.backups/
+public/data/cloud-atlas.forecast/f*.json
+public/data/cloud-atlas.forecast/[0-9]*T*-f*.json
+
+# Local data caches (downloaded geo/audio assets)
+data/cache/
+data/raw/
+
+# Local source bundle backups
+penumbra-source-kit.zip

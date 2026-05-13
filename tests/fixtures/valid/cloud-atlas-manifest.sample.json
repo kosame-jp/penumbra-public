@@ -1,0 +1,28 @@
+{
+  "version": "test-cloud-atlas-forecast",
+  "generatedAtUtc": "2026-05-06T06:00:00.000Z",
+  "activeCycleUtc": "2026-05-06T06:00:00.000Z",
+  "transitionDurationMinutes": 20,
+  "interpolation": "linear-time",
+  "source": {
+    "kind": "provisional-fixture",
+    "model": "unit-test",
+    "provenance": "unit test cloud atlas forecast fixture"
+  },
+  "frames": [
+    {
+      "url": "cloud-atlas-f000.sample.json",
+      "validAtUtc": "2026-05-06T06:00:00.000Z",
+      "cycleUtc": "2026-05-06T06:00:00.000Z",
+      "forecastHour": 0,
+      "label": "f000"
+    },
+    {
+      "url": "cloud-atlas-f003.sample.json",
+      "validAtUtc": "2026-05-06T09:00:00.000Z",
+      "cycleUtc": "2026-05-06T06:00:00.000Z",
+      "forecastHour": 3,
+      "label": "f003"
+    }
+  ]
+}

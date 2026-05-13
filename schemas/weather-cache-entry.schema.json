@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://penumbra.app/schemas/weather-cache-entry.schema.json",
+  "title": "PENUMBRA Weather Cache Entry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "cacheKey",
+    "latitudeDeg",
+    "longitudeDeg",
+    "observedAtUtc",
+    "fetchedAtUtc",
+    "validUntilUtc",
+    "temperatureC",
+    "relativeHumidityPct",
+    "pressureHpa",
+    "windSpeedMps",
+    "cloudCoverPct",
+    "precipitationMm"
+  ],
+  "properties": {
+    "cacheKey": { "type": "string" },
+    "latitudeDeg": { "type": "number", "minimum": -90, "maximum": 90 },
+    "longitudeDeg": { "type": "number", "minimum": -180, "maximum": 180 },
+    "observedAtUtc": { "type": "string", "format": "date-time" },
+    "fetchedAtUtc": { "type": "string", "format": "date-time" },
+    "validUntilUtc": { "type": "string", "format": "date-time" },
+    "temperatureC": { "type": "number" },
+    "relativeHumidityPct": { "type": "number", "minimum": 0, "maximum": 100 },
+    "pressureHpa": { "type": "number" },
+    "windSpeedMps": { "type": "number", "minimum": 0 },
+    "cloudCoverPct": { "type": "number", "minimum": 0, "maximum": 100 },
+    "precipitationMm": { "type": "number", "minimum": 0 },
+    "weatherCode": { "type": "integer" }
+  }
+}

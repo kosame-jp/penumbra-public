@@ -1,0 +1,15 @@
+{
+  "cacheKey": "35.0_139.0_2026-04-29T10",
+  "latitudeDeg": 35.0,
+  "longitudeDeg": 139.0,
+  "observedAtUtc": "2026-04-29T10:00:00Z",
+  "fetchedAtUtc": "2026-04-29T09:42:00Z",
+  "validUntilUtc": "2026-04-29T10:45:00Z",
+  "temperatureC": 18.2,
+  "relativeHumidityPct": 72,
+  "pressureHpa": 1008.4,
+  "windSpeedMps": 4.2,
+  "cloudCoverPct": 64,
+  "precipitationMm": 0.2,
+  "weatherCode": 3
+}

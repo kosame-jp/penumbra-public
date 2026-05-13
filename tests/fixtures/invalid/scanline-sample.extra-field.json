@@ -1,0 +1,33 @@
+{
+  "latitudeDeg": 35,
+  "longitudeDeg": 139,
+  "scanlineWeight": 0.82,
+  "utcIso": "2026-04-29T10:30:00Z",
+  "cellId": "tokyo-bay-sample",
+  "effectiveElevationM": 35,
+  "registerMidi": 48.7,
+  "nightLightNorm": 0.91,
+  "surfaceHardness01": 0.95,
+  "openness01": 0.42,
+  "waterRatio": 0.28,
+  "forestRatio": 0.04,
+  "roadDensityNorm": 0.74,
+  "buildingDensityNorm": 0.86,
+  "weather": {
+    "cloudCoverPct": 64,
+    "relativeHumidityPct": 72,
+    "windSpeedMps": 4.2,
+    "precipitationMm": 0.2,
+    "temperatureC": 18.2
+  },
+  "tuning": {
+    "gridKernelWeights": { "12tet": 1 },
+    "scaleKernelWeights": { "east_asia_pentatonic": 1 }
+  },
+  "layers": {
+    "earth": { "active": true, "brightness01": 0.48 },
+    "music": { "active": true, "gain01": 0.83 },
+    "quakes": []
+  },
+  "unexpected": true
+}

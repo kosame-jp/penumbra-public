@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://penumbra.app/schemas/tuning-kernels.schema.json",
+  "title": "PENUMBRA Tuning Kernels",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "kernels"],
+  "properties": {
+    "version": { "type": "string" },
+    "kernels": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/kernel" }
+    }
+  },
+  "$defs": {
+    "centroid": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["latDeg", "lonDeg"],
+      "properties": {
+        "latDeg": { "type": "number", "minimum": -90, "maximum": 90 },
+        "lonDeg": { "type": "number", "minimum": -180, "maximum": 180 }
+      }
+    },
+    "mode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label"],
+      "properties": {
+        "id": { "type": "string" },
+        "label": { "type": "string" },
+        "intervalCents": {
+          "type": "array",
+          "items": { "type": "number", "minimum": 0, "maximum": 1200 },
+          "uniqueItems": true
+        },
+        "notes": { "type": "string" }
+      }
+    },
+    "kernel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "family",
+        "label",
+        "centroid",
+        "sigmaKm",
+        "status",
+        "reviewRequired",
+        "notes",
+        "provenance"
+      ],
+      "properties": {
+        "id": { "type": "string" },
+        "family": { "type": "string", "enum": ["grid", "scale"] },
+        "label": { "type": "string" },
+        "centroid": { "$ref": "#/$defs/centroid" },
+        "sigmaKm": { "type": "number", "exclusiveMinimum": 0 },
+        "status": { "type": "string", "enum": ["provisional", "reviewed", "final"] },
+        "reviewRequired": { "type": "boolean" },
+        "intervalCents": {
+          "type": "array",
+          "items": { "type": "number", "minimum": 0, "maximum": 1200 },
+          "uniqueItems": true
+        },
+        "modes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/mode" }
+        },
+        "notes": { "type": "string" },
+        "provenance": { "type": "string" }
+      }
+    }
+  }
+}

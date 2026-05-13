@@ -1,0 +1,128 @@
+{
+  "version": "2026-04-29-provisional",
+  "kernels": [
+    {
+      "id": "12tet",
+      "family": "grid",
+      "label": "12-TET",
+      "centroid": { "latDeg": 48, "lonDeg": 15 },
+      "sigmaKm": 4000,
+      "status": "reviewed",
+      "reviewRequired": false,
+      "intervalCents": [0,100,200,300,400,500,600,700,800,900,1000,1100],
+      "notes": "equal temperament grid kernel",
+      "provenance": "design-spec fixed topology"
+    },
+    {
+      "id": "maqam",
+      "family": "grid",
+      "label": "Maqam (abstract grid)",
+      "centroid": { "latDeg": 33, "lonDeg": 38 },
+      "sigmaKm": 2500,
+      "status": "provisional",
+      "reviewRequired": true,
+      "intervalCents": [0,50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,850,900,950,1000,1050,1100,1150],
+      "modes": [
+        { "id": "rast_like", "label": "Rast-like", "intervalCents": [0,200,350,500,700,900,1050], "notes": "abstract placeholder" },
+        { "id": "bayati_like", "label": "Bayati-like", "intervalCents": [0,150,350,500,700,850,1000], "notes": "abstract placeholder" },
+        { "id": "hijaz_like", "label": "Hijaz-like", "intervalCents": [0,100,400,500,700,800,1100], "notes": "abstract placeholder" }
+      ],
+      "notes": "v1 provisional abstract grid to unblock implementation; requires cultural review",
+      "provenance": "implementation placeholder based on abstract quarter-tone candidate grid"
+    },
+    {
+      "id": "indian",
+      "family": "grid",
+      "label": "Indian (abstract grid)",
+      "centroid": { "latDeg": 23, "lonDeg": 80 },
+      "sigmaKm": 2000,
+      "status": "provisional",
+      "reviewRequired": true,
+      "intervalCents": [0,90,112,182,204,294,316,386,408,498,520,590,612,702,792,814,884,906,996,1018,1088,1110],
+      "modes": [
+        { "id": "dawn_mode", "label": "Dawn mode", "intervalCents": [0,112,386,498,702,814,1088], "notes": "abstract placeholder" },
+        { "id": "day_mode", "label": "Day mode", "intervalCents": [0,204,386,498,702,884,1088], "notes": "abstract placeholder" },
+        { "id": "night_mode", "label": "Night mode", "intervalCents": [0,112,316,498,702,814,996], "notes": "abstract placeholder" }
+      ],
+      "notes": "v1 provisional abstract candidate grid inspired by shruti-style density, not a claim of canonical accuracy",
+      "provenance": "implementation placeholder requiring later curation"
+    },
+    {
+      "id": "slendro_pelog",
+      "family": "grid",
+      "label": "Slendro / Pelog (abstract grid)",
+      "centroid": { "latDeg": -5, "lonDeg": 112 },
+      "sigmaKm": 1500,
+      "status": "provisional",
+      "reviewRequired": true,
+      "intervalCents": [0,120,240,390,480,570,720,780,960,1020],
+      "modes": [
+        { "id": "slendro", "label": "Slendro", "intervalCents": [0,240,480,720,960], "notes": "abstract placeholder" },
+        { "id": "pelog", "label": "Pelog", "intervalCents": [0,120,390,570,780,1020], "notes": "abstract placeholder" }
+      ],
+      "notes": "v1 provisional combined abstract grid",
+      "provenance": "implementation placeholder requiring later curation"
+    },
+    {
+      "id": "east_asia_pentatonic",
+      "family": "scale",
+      "label": "East Asian Pentatonic",
+      "centroid": { "latDeg": 35, "lonDeg": 122 },
+      "sigmaKm": 2500,
+      "status": "reviewed",
+      "reviewRequired": false,
+      "modes": [
+        { "id": "yang", "label": "Yang", "intervalCents": [0,200,400,700,900], "notes": "major pentatonic" },
+        { "id": "yin", "label": "Yin", "intervalCents": [0,300,500,700,1000], "notes": "minor-leaning pentatonic abstraction" }
+      ],
+      "notes": "scale kernel inside 12-TET frame",
+      "provenance": "design-spec fixed topology"
+    },
+    {
+      "id": "church_modes",
+      "family": "scale",
+      "label": "Church Modes",
+      "centroid": { "latDeg": 57, "lonDeg": 17 },
+      "sigmaKm": 3500,
+      "status": "reviewed",
+      "reviewRequired": false,
+      "modes": [
+        { "id": "ionian", "label": "Ionian", "intervalCents": [0,200,400,500,700,900,1100] },
+        { "id": "dorian", "label": "Dorian", "intervalCents": [0,200,300,500,700,900,1000] },
+        { "id": "aeolian", "label": "Aeolian", "intervalCents": [0,200,300,500,700,800,1000] }
+      ],
+      "notes": "12-TET scale selection kernel",
+      "provenance": "design-spec fixed topology"
+    },
+    {
+      "id": "west_african_blues",
+      "family": "scale",
+      "label": "West African + Blues Inflection",
+      "centroid": { "latDeg": 12, "lonDeg": 0 },
+      "sigmaKm": 3000,
+      "status": "provisional",
+      "reviewRequired": true,
+      "modes": [
+        { "id": "pentatonic_core", "label": "Pentatonic core", "intervalCents": [0,300,500,700,1000], "notes": "abstract placeholder" },
+        { "id": "pentatonic_blue", "label": "Pentatonic + blue inflection", "intervalCents": [0,300,500,600,700,1000], "notes": "abstract placeholder" }
+      ],
+      "notes": "kept as abstract selection kernel, not tied to specific instrumental practice",
+      "provenance": "implementation placeholder requiring later review"
+    },
+    {
+      "id": "andean_pentatonic",
+      "family": "scale",
+      "label": "Andean Pentatonic",
+      "centroid": { "latDeg": -15, "lonDeg": -72 },
+      "sigmaKm": 1500,
+      "status": "provisional",
+      "reviewRequired": true,
+      "modes": [
+        { "id": "huayno_like_a", "label": "Huayno-like A", "intervalCents": [0,200,400,700,900], "notes": "abstract placeholder" },
+        { "id": "huayno_like_b", "label": "Huayno-like B", "intervalCents": [0,200,500,700,900], "notes": "abstract placeholder" }
+      ],
+      "notes": "shares pentatonic subset structure with other traditions but remains a separate geographic kernel by design",
+      "provenance": "implementation placeholder requiring later review"
+    }
+  ]
+}

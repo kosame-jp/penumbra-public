@@ -1,0 +1,12 @@
+{
+  "version": "invalid",
+  "kernels": [
+    {
+      "id": "bad_kernel",
+      "family": "grid",
+      "label": "Bad Kernel",
+      "centroid": { "latDeg": 0, "lonDeg": 0 },
+      "sigmaKm": 0
+    }
+  ]
+}
