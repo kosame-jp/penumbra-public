@@ -29,16 +29,17 @@ experimental `0p5` build publishes the same forecast hours at 0.5 degree. Both w
 URLs first, then atomically replace `manifest.json`. Eight prior generations are retained so
 browsers holding the previous manifest can still resolve its frames.
 
-## Staging Cron
+## Production Cron
 
-The repository includes a GitHub Actions staging workflow:
+The repository includes a GitHub Actions forecast workflow:
 
 ```text
 .github/workflows/cloud-forecast-staging.yml
 ```
 
-It runs every 3 hours and can also be started manually from `workflow_dispatch`.
-The scheduled job uses the current 0.5 degree GFS artifact route:
+It runs four times per UTC day after the expected GFS public availability window and can also be
+started manually from `workflow_dispatch`. The scheduled job uses the current 0.5 degree GFS artifact
+route:
 
 ```bash
 npm run precompute:cloud-atlas:forecast-gfs:0p5:ops
@@ -46,18 +47,26 @@ npm run precompute:cloud-atlas:forecast-gfs:0p5:ops
 
 The workflow installs `wgrib2` from conda-forge via micromamba, inspects the selected GFS source,
 generates the forecast sequence, validates schema and operational freshness, builds the static app,
-and uploads two artifacts:
+commits changed `public/data/cloud-atlas.forecast/*` files back to `main`, and uploads two artifacts:
 
 - `cloud-atlas-forecast-*`: the generated `public/data/cloud-atlas.forecast` directory
 - `penumbra-static-staging-*`: the built `dist` directory containing that forecast sequence
 
-By default, scheduled runs do not publish a public site. To test a live staging URL, either:
+The commit step exists so Vercel can redeploy the static app from `main` without any browser-local
+fan-out requests. If the generated forecast matches the tracked artifact, the workflow exits that
+step without committing.
 
-- start the workflow manually and set `deploy_pages` to `true`, or
-- set repository variable `PENUMBRA_CLOUD_STAGING_DEPLOY=true` so scheduled runs deploy to GitHub Pages
+Manual runs expose two operational switches:
 
-The deploy path is staging-only. It hosts static files; it must not hold canonical musical state.
-The browser still derives canonical state from UTC and the shared static artifacts.
+- `commit_forecast`: default `true`; set to `false` to test generation without updating `main`
+- `deploy_pages`: default `false`; optional GitHub Pages staging artifact deployment
+
+To test a live GitHub Pages staging URL, either start the workflow manually and set `deploy_pages` to
+`true`, or set repository variable `PENUMBRA_CLOUD_STAGING_DEPLOY=true` so scheduled runs deploy to
+GitHub Pages.
+
+The deploy paths host static files; they must not hold canonical musical state. The browser still
+derives canonical state from UTC and the shared static artifacts.
 
 ## Freshness
 

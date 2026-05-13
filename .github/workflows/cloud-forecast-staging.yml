@@ -1,10 +1,10 @@
-name: Cloud Forecast Staging
+name: Cloud Forecast Cron
 
 on:
   schedule:
     # GFS cycles are 00/06/12/18 UTC, but public availability lags.
-    # A 3-hour cadence tests refresh behavior without requiring exact cycle timing.
-    - cron: "17 */3 * * *"
+    # Run after each expected public cycle window, in UTC.
+    - cron: "47 3,9,15,21 * * *"
   workflow_dispatch:
     inputs:
       resolution:
@@ -20,9 +20,14 @@ on:
         required: false
         default: false
         type: boolean
+      commit_forecast:
+        description: "Commit the generated forecast artifact back to main for Vercel auto-deploy."
+        required: false
+        default: true
+        type: boolean
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -37,9 +42,12 @@ jobs:
     env:
       FORECAST_RESOLUTION: ${{ github.event_name == 'workflow_dispatch' && inputs.resolution || '0.5' }}
       DEPLOY_PAGES: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy_pages || github.event_name != 'workflow_dispatch' && vars.PENUMBRA_CLOUD_STAGING_DEPLOY == 'true' }}
+      COMMIT_FORECAST: ${{ github.event_name == 'schedule' || inputs.commit_forecast == true }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -78,6 +86,22 @@ jobs:
 
       - name: Build static app with generated forecast
         run: npm run build
+
+      - name: Commit forecast artifact for Vercel
+        if: env.COMMIT_FORECAST == 'true'
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -u public/data/cloud-atlas.forecast
+          git add -f public/data/cloud-atlas.forecast/manifest.json public/data/cloud-atlas.forecast/*.json
+          if git diff --cached --quiet; then
+            echo "No cloud forecast changes to commit."
+            exit 0
+          fi
+          generated_at="$(node -e "const m = require('./public/data/cloud-atlas.forecast/manifest.json'); console.log(m.generatedAtUtc)")"
+          git commit -m "Update cloud forecast ${generated_at}"
+          git push
 
       - name: Upload cloud forecast artifact
         uses: actions/upload-artifact@v4
