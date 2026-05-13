@@ -21,7 +21,12 @@ on:
         default: false
         type: boolean
       commit_forecast:
-        description: "Commit the generated forecast artifact back to main for Vercel auto-deploy."
+        description: "Commit the generated forecast artifact back to main. Keep false when R2 publishing is enabled."
+        required: false
+        default: false
+        type: boolean
+      publish_r2:
+        description: "Publish the generated forecast artifact to Cloudflare R2."
         required: false
         default: true
         type: boolean
@@ -42,7 +47,11 @@ jobs:
     env:
       FORECAST_RESOLUTION: ${{ github.event_name == 'workflow_dispatch' && inputs.resolution || '0.5' }}
       DEPLOY_PAGES: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy_pages || github.event_name != 'workflow_dispatch' && vars.PENUMBRA_CLOUD_STAGING_DEPLOY == 'true' }}
-      COMMIT_FORECAST: ${{ github.event_name == 'schedule' || inputs.commit_forecast == true }}
+      COMMIT_FORECAST: ${{ github.event_name == 'workflow_dispatch' && inputs.commit_forecast == true || github.event_name == 'schedule' && vars.PENUMBRA_CLOUD_COMMIT_FORECAST == 'true' }}
+      PUBLISH_R2: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_r2 == true || github.event_name == 'schedule' && vars.PENUMBRA_CLOUD_R2_ENABLED == 'true' }}
+      R2_BUCKET: ${{ vars.PENUMBRA_CLOUD_R2_BUCKET }}
+      R2_PREFIX: ${{ vars.PENUMBRA_CLOUD_R2_PREFIX || 'data/cloud-atlas.forecast' }}
+      R2_RETAIN_GENERATIONS: ${{ vars.PENUMBRA_CLOUD_R2_RETAIN_GENERATIONS || '8' }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -83,6 +92,45 @@ jobs:
           else
             npm run precompute:cloud-atlas:forecast-gfs:0p5:ops
           fi
+
+      - name: Stage forecast artifact for R2
+        if: env.PUBLISH_R2 == 'true'
+        shell: bash
+        run: node scripts/precompute/stage-cloud-atlas-forecast-r2.mjs --output-dir "$RUNNER_TEMP/cloud-atlas.forecast-r2" --retain-generations "$R2_RETAIN_GENERATIONS"
+
+      - name: Publish forecast artifact to Cloudflare R2
+        if: env.PUBLISH_R2 == 'true'
+        shell: bash
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.CLOUDFLARE_R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.CLOUDFLARE_R2_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          : "${CLOUDFLARE_ACCOUNT_ID:?Set GitHub secret CLOUDFLARE_ACCOUNT_ID.}"
+          : "${AWS_ACCESS_KEY_ID:?Set GitHub secret CLOUDFLARE_R2_ACCESS_KEY_ID.}"
+          : "${AWS_SECRET_ACCESS_KEY:?Set GitHub secret CLOUDFLARE_R2_SECRET_ACCESS_KEY.}"
+          : "${R2_BUCKET:?Set GitHub variable PENUMBRA_CLOUD_R2_BUCKET.}"
+          R2_PREFIX="${R2_PREFIX%/}"
+          if ! command -v aws >/dev/null 2>&1; then
+            python3 -m pip install --user awscli
+            export PATH="$HOME/.local/bin:$PATH"
+          fi
+          aws --version
+          endpoint="https://${CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com"
+          target="s3://${R2_BUCKET}/${R2_PREFIX}"
+          aws s3 sync "$RUNNER_TEMP/cloud-atlas.forecast-r2" "$target" \
+            --endpoint-url "$endpoint" \
+            --region auto \
+            --delete \
+            --exclude "manifest.json" \
+            --content-type "application/json" \
+            --cache-control "public, max-age=31536000, immutable"
+          aws s3 cp "$RUNNER_TEMP/cloud-atlas.forecast-r2/manifest.json" "$target/manifest.json" \
+            --endpoint-url "$endpoint" \
+            --region auto \
+            --content-type "application/json" \
+            --cache-control "public, max-age=60, must-revalidate"
 
       - name: Build static app with generated forecast
         run: npm run build

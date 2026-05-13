@@ -20,6 +20,7 @@
     "check:cloud-atlas:forecast": "node scripts/checks/validate-cloud-atlas-forecast.mjs",
     "check:cloud-atlas:ops": "node scripts/checks/validate-cloud-atlas-forecast.mjs --require-current --max-hold-hours 6",
     "inspect:gfs-cloud-source": "node scripts/precompute/inspect-gfs-cloud-source.mjs --forecast-hours 0,3,6,9",
+    "stage:cloud-atlas:forecast:r2": "node scripts/precompute/stage-cloud-atlas-forecast-r2.mjs --output-dir .tmp/cloud-atlas.forecast-r2",
     "validate:fixtures": "vitest run tests/unit/schema-validation.test.ts",
     "precompute:terrain-worldgrid": "node scripts/precompute/build-terrain-worldgrid.mjs --step 5 --zoom 5 --output public/data/worldgrid.terrain-seed.json",
     "precompute:visual-surface-worldgrid": "node scripts/precompute/build-terrain-worldgrid.mjs --step 1 --zoom 4 --output public/data/worldgrid.visual-surface-1deg.json",

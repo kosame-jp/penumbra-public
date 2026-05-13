@@ -46,19 +46,21 @@ npm run precompute:cloud-atlas:forecast-gfs:0p5:ops
 ```
 
 The workflow installs `wgrib2` from conda-forge via micromamba, inspects the selected GFS source,
-generates the forecast sequence, validates schema and operational freshness, builds the static app,
-commits changed `public/data/cloud-atlas.forecast/*` files back to `main`, and uploads two artifacts:
+generates the forecast sequence, validates schema and operational freshness, publishes the forecast
+sequence to Cloudflare R2 when configured, builds the static app, and uploads two artifacts:
 
 - `cloud-atlas-forecast-*`: the generated `public/data/cloud-atlas.forecast` directory
 - `penumbra-static-staging-*`: the built `dist` directory containing that forecast sequence
 
-The commit step exists so Vercel can redeploy the static app from `main` without any browser-local
-fan-out requests. If the generated forecast matches the tracked artifact, the workflow exits that
-step without committing.
+R2 is the preferred production path. The browser still reads a static `manifest.json` and versioned
+frame JSON files, but those forecast files are no longer committed to Git history on every cycle.
+The Git commit path remains available only as a fallback by setting `commit_forecast=true` manually
+or repository variable `PENUMBRA_CLOUD_COMMIT_FORECAST=true`.
 
 Manual runs expose two operational switches:
 
-- `commit_forecast`: default `true`; set to `false` to test generation without updating `main`
+- `publish_r2`: default `true`; upload the generated artifact to Cloudflare R2
+- `commit_forecast`: default `false`; commit the generated artifact back to `main`
 - `deploy_pages`: default `false`; optional GitHub Pages staging artifact deployment
 
 To test a live GitHub Pages staging URL, either start the workflow manually and set `deploy_pages` to
@@ -67,6 +69,53 @@ GitHub Pages.
 
 The deploy paths host static files; they must not hold canonical musical state. The browser still
 derives canonical state from UTC and the shared static artifacts.
+
+## Cloudflare R2 Publishing
+
+Production forecast artifacts should be published to a public R2 bucket or R2 custom domain. Use
+Cloudflare R2 Standard storage, not Infrequent Access. The current 0.5 degree GFS sequence is about
+7-8 MB per generated forecast generation. The precompute script retains eight versioned generations
+locally; the workflow stages only `manifest.json` plus versioned `YYYYMMDDTHHMMSSZ-fNNN.json` frames
+and runs `aws s3 sync --delete`, so old R2 objects are removed automatically. Manual cleanup should
+not be necessary.
+
+Recommended object path:
+
+```text
+data/cloud-atlas.forecast/manifest.json
+data/cloud-atlas.forecast/YYYYMMDDTHHMMSSZ-f000.json
+data/cloud-atlas.forecast/YYYYMMDDTHHMMSSZ-f003.json
+data/cloud-atlas.forecast/YYYYMMDDTHHMMSSZ-f006.json
+data/cloud-atlas.forecast/YYYYMMDDTHHMMSSZ-f009.json
+```
+
+Repository variables:
+
+```text
+PENUMBRA_CLOUD_R2_ENABLED=true
+PENUMBRA_CLOUD_R2_BUCKET=<bucket name>
+PENUMBRA_CLOUD_R2_PREFIX=data/cloud-atlas.forecast
+PENUMBRA_CLOUD_R2_RETAIN_GENERATIONS=8
+```
+
+Repository secrets:
+
+```text
+CLOUDFLARE_ACCOUNT_ID=<Cloudflare account id>
+CLOUDFLARE_R2_ACCESS_KEY_ID=<R2 API token access key id>
+CLOUDFLARE_R2_SECRET_ACCESS_KEY=<R2 API token secret access key>
+```
+
+Vercel production environment variable:
+
+```text
+VITE_PENUMBRA_CLOUD_FORECAST_MANIFEST_URL=https://<r2-public-host>/data/cloud-atlas.forecast/manifest.json
+```
+
+If the R2 public host is not same-origin with `penumbra.kosame.work`, configure the R2 bucket CORS
+policy to allow `GET` from the production origin and the Vercel preview origin used for verification.
+The app falls back to `/data/cloud-atlas.forecast/manifest.json` when the Vite environment variable
+is absent.
 
 ## Freshness
 

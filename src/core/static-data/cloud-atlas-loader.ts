@@ -91,7 +91,8 @@ export interface LoadCloudAtlasSequenceOptions {
 }
 
 export const DEFAULT_CLOUD_ATLAS_URL = "/data/cloud-atlas.current.json";
-export const DEFAULT_CLOUD_ATLAS_FORECAST_MANIFEST_URL = "/data/cloud-atlas.forecast/manifest.json";
+export const DEFAULT_CLOUD_ATLAS_FORECAST_MANIFEST_URL =
+  configuredCloudAtlasForecastManifestUrl() ?? "/data/cloud-atlas.forecast/manifest.json";
 export const FIXTURE_CLOUD_ATLAS_URL = "/data/fixtures/cloud-atlas.provisional.json";
 export const DEFAULT_CLOUD_ATLAS_FORECAST_MAX_HOLD_MS = 6 * 60 * 60 * 1000;
 
@@ -562,4 +563,12 @@ function requireInteger(record: Record<string, unknown>, field: string, label: s
   if (!Number.isInteger(record[field])) {
     throw new Error(`${label}.${field} must be an integer.`);
   }
+}
+
+function configuredCloudAtlasForecastManifestUrl(): string | undefined {
+  const env = (import.meta as ImportMeta & {
+    readonly env?: Record<string, string | undefined>;
+  }).env;
+  const configured = env?.VITE_PENUMBRA_CLOUD_FORECAST_MANIFEST_URL?.trim();
+  return configured === "" ? undefined : configured;
 }
