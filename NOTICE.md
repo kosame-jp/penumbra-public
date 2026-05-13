@@ -42,6 +42,6 @@ full upstream license texts distributed by each dependency.
 - Exact bundled license text extraction for each dependency is still a release
   packaging task before public distribution.
 - Current static seed data includes generated terrain/bathymetry, VIIRS nightlight
-  brightness, and sampled OpenStreetMap density proxies. Exact upstream license
-  bundle packaging remains a release task; current source notes live in
-  `ATTRIBUTIONS.md`.
+  brightness, sampled OpenStreetMap density proxies, and NOAA GFS-derived cloud
+  forecast artifacts. Exact upstream license bundle packaging remains a release
+  task; current source notes live in `ATTRIBUTIONS.md`.

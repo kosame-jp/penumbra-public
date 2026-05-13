@@ -14,8 +14,8 @@ npm run build
 
 Deploy the generated `dist/` directory to a static host. The host may serve
 files, but it must not hold canonical musical state. The running browser derives
-canonical state from UTC time and local deterministic calculations, then fetches
-live data directly from the browser runtime.
+canonical state from UTC time and local deterministic calculations, then reads
+shared static forecast artifacts and live earthquake data from the browser runtime.
 
 Required static paths:
 
@@ -30,7 +30,10 @@ Required static paths:
 External runtime sources:
 
 - USGS all-day GeoJSON feed for earthquakes
-- Open-Meteo current weather for scanline-local cells
+- NOAA GFS cloud forecast artifact, preferably published at
+  `VITE_PENUMBRA_CLOUD_FORECAST_MANIFEST_URL`
+- Open-Meteo current weather only as a scanline-local fallback when the shared
+  forecast artifact is unavailable
 
 Static generated sources:
 

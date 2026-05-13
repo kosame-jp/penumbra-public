@@ -1,7 +1,9 @@
 import { PenumbraAudioEngine } from "../core/audio/engine";
 import { deriveAudioFrameParams } from "../core/audio/audio-params";
 import { tuningModeAtmosphereFromCloudAtlasSequence } from "../core/fusion/forecast-mode-atmosphere";
+import { weatherSampleFromCloudAtlasSequence } from "../core/fusion/forecast-weather";
 import { createCanonicalScanlineSamples } from "../core/fusion/scanline-sample";
+import type { WeatherSample } from "../core/live-data/openmeteo-client";
 import { precipitationBandFieldFromCloudAtlasSequence } from "../core/fusion/precipitation-band";
 import type { EarthquakeFixtureFile } from "../core/live-data/quake-store";
 import { RollingFrameProfiler, type FrameProfilerStats } from "../core/performance/frame-profiler";
@@ -29,6 +31,7 @@ import {
   loadVisualSurfaceWorldGrid,
   loadWorldGridResult,
   type WorldGrid,
+  type WorldGridCell,
 } from "../core/static-data/worldgrid-loader";
 import {
   createRuntimeFallbackStatus,
@@ -534,9 +537,14 @@ export class PenumbraApp {
     }
   }
 
-  private syncLiveDataFallbackStatuses(date: Date): void {
+  private syncLiveDataFallbackStatuses(
+    date: Date,
+    options: { readonly usingForecastWeather?: boolean } = {},
+  ): void {
     const diagnostics = this.liveData.diagnostics(date);
-    if (diagnostics.lastWeatherError) {
+    if (options.usingForecastWeather) {
+      this.clearFallbackStatus("live-weather-fallback");
+    } else if (diagnostics.lastWeatherError) {
       this.setFallbackStatus("live-weather-fallback", { now: date });
     } else {
       this.clearFallbackStatus("live-weather-fallback");
@@ -820,10 +828,14 @@ export class PenumbraApp {
     const scanlineState = createScanlineState(renderDate);
     if (!this.mode.capture) {
       void this.liveData.maybePollQuakes(renderDate);
-      void this.liveData.maybeRefreshWeatherForScanline(scanlineState, this.worldGrid, renderDate);
       this.maybeRefreshCloudAtlasForecast(renderDate);
       this.expireCloudAtlasForecastIfNeeded(renderDate);
-      this.syncLiveDataFallbackStatuses(renderDate);
+      if (!this.hasForecastWeather(renderDate)) {
+        void this.liveData.maybeRefreshWeatherForScanline(scanlineState, this.worldGrid, renderDate);
+      }
+      this.syncLiveDataFallbackStatuses(renderDate, {
+        usingForecastWeather: this.hasForecastWeather(renderDate),
+      });
     }
     const samples = createCanonicalScanlineSamples({
       scanlineState,
@@ -831,8 +843,8 @@ export class PenumbraApp {
       musicContactWorldGrid: this.contactWorldGrid,
       tuningKernels: this.tuningKernels,
       quakes: this.mode.capture ? [] : this.liveData.listQuakes(renderDate),
-      weatherForCell: (cellId) =>
-        this.mode.capture ? undefined : this.liveData.getWeatherForCell(cellId, renderDate),
+      weatherForCell: (cellId, cell) =>
+        this.mode.capture ? undefined : this.weatherSampleForCell(cellId, cell, renderDate),
       tuningModeAtmosphereForCell: (cell) =>
         tuningModeAtmosphereFromCloudAtlasSequence({
           sequence: this.cloudAtlasSequence,
@@ -864,6 +876,28 @@ export class PenumbraApp {
       this.mode.capture ? undefined : precipitationBand,
       this.mode.capture ? undefined : this.audio.getEarthRootDebugMeter(),
     );
+  }
+
+  private hasForecastWeather(date: Date): boolean {
+    if (!this.cloudAtlasSequence) {
+      return false;
+    }
+
+    return cloudAtlasSequenceFreshness(this.cloudAtlasSequence, date.getTime()).usable;
+  }
+
+  private weatherSampleForCell(
+    cellId: string,
+    cell: WorldGridCell,
+    date: Date,
+  ): WeatherSample | undefined {
+    const forecastWeather = weatherSampleFromCloudAtlasSequence({
+      sequence: this.cloudAtlasSequence,
+      utcMs: date.getTime(),
+      latitudeDeg: cell.latCenterDeg,
+      longitudeDeg: cell.lonCenterDeg,
+    });
+    return forecastWeather ?? this.liveData.getWeatherForCell(cellId, date);
   }
 
   private maybeRefreshCloudAtlasForecast(date: Date): void {

@@ -129,8 +129,14 @@ Runtime behavior:
 
 - fresh/current sequence: draw the cached cloud shell and linearly interpolate frames by UTC
 - hold window: keep the last available frame rather than hard cutting clouds
-- stale/future/empty sequence: ignore it and leave the visual cloud layer empty; scanline-local
-  cloud values continue to feed audio/rain/debug state
+- stale/future/empty sequence: ignore it and leave the visual cloud layer empty; only then may
+  scanline-local Open-Meteo fallback fill live weather cache values
+- fresh/current/hold sequence: production derives scanline weather samples from the shared GFS
+  forecast artifact instead of fanning out browser-local Open-Meteo requests. `TCDC` feeds cloud
+  cover, `CWAT` feeds an atmospheric wetness / humidity proxy, and `PRATE` feeds precipitation
+  activity. The current artifact does not carry true wind or temperature, so wind is a deterministic
+  cloud-gradient texture proxy and temperature remains canonical default. This keeps browser
+  instances sharing the same artifact aligned and avoids public runtime 429s from point weather APIs.
 
 Operational check:
 

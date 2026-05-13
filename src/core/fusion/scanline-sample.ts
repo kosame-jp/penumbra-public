@@ -73,7 +73,7 @@ export interface ScanlineSampleInput {
   readonly musicContactWorldGrid?: WorldGrid;
   readonly tuningKernels: TuningKernelSet;
   readonly quakes?: readonly EarthquakeEvent[];
-  readonly weatherForCell?: (cellId: string) => WeatherSample | undefined;
+  readonly weatherForCell?: (cellId: string, cell: WorldGridCell) => WeatherSample | undefined;
   readonly tuningModeAtmosphereForCell?: (cell: WorldGridCell) => TuningModeAtmosphere | undefined;
 }
 
@@ -93,7 +93,7 @@ export function createCanonicalScanlineSamples(input: ScanlineSampleInput): Cano
       point.latitudeDeg,
       point.sunriseLongitudeDeg,
     );
-    const weather = input.weatherForCell?.(cell.id) ?? DEFAULT_WEATHER_SAMPLE;
+    const weather = input.weatherForCell?.(cell.id, cell) ?? DEFAULT_WEATHER_SAMPLE;
     const tuningModeAtmosphere = input.tuningModeAtmosphereForCell?.(cell);
     const elevationM = effectiveElevationM(cell);
     const scanlineWeight = 1;
@@ -180,7 +180,7 @@ export function createCanonicalScanlineSamples(input: ScanlineSampleInput): Cano
       utcIso: input.scanlineState.utc.iso,
       tuningKernels: input.tuningKernels,
       worldGrid: musicContactWorldGrid,
-      weather: input.weatherForCell?.(contact.cell.id) ?? DEFAULT_WEATHER_SAMPLE,
+      weather: input.weatherForCell?.(contact.cell.id, contact.cell) ?? DEFAULT_WEATHER_SAMPLE,
       tuningModeAtmosphere: input.tuningModeAtmosphereForCell?.(contact.cell),
       earthDroneKeyCenterMidi,
     }),
@@ -376,7 +376,9 @@ function spatialChangeForSample(input: {
   readonly longitudeDeg: number;
   readonly worldGrid: WorldGrid;
   readonly weather: WeatherSample;
-  readonly weatherForCell: ((cellId: string) => WeatherSample | undefined) | undefined;
+  readonly weatherForCell:
+    | ((cellId: string, cell: WorldGridCell) => WeatherSample | undefined)
+    | undefined;
 }): Pick<CanonicalScanlineSample, "spatialChange01" | "spatialSlope01"> {
   const offsetDeg = clamp(
     input.worldGrid.cellSizeDegrees / 2,
@@ -393,8 +395,9 @@ function spatialChangeForSample(input: {
     input.latitudeDeg,
     normalizeDegrees180(input.longitudeDeg + offsetDeg),
   );
-  const previousWeather = input.weatherForCell?.(previousCell.id) ?? DEFAULT_WEATHER_SAMPLE;
-  const nextWeather = input.weatherForCell?.(nextCell.id) ?? DEFAULT_WEATHER_SAMPLE;
+  const previousWeather =
+    input.weatherForCell?.(previousCell.id, previousCell) ?? DEFAULT_WEATHER_SAMPLE;
+  const nextWeather = input.weatherForCell?.(nextCell.id, nextCell) ?? DEFAULT_WEATHER_SAMPLE;
   const previousChange = cellChangeMagnitude(input.cell, previousCell, input.worldGrid);
   const nextChange = cellChangeMagnitude(input.cell, nextCell, input.worldGrid);
   const weatherChange = average([
