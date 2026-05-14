@@ -17,7 +17,7 @@ Operational differences:
 - target frame rate is capped at 30fps
 - WebGL pixel ratio and terrain marker geometry are capped for long-running capture stability
 - cursor is hidden
-- the work title `penumbra` is shown as a restrained lower-center Cormorant SC typographic mark for capture context
+- the work title `PENUMBRA` is shown as a restrained lower-center JetBrains Mono typographic mark for capture context
 - the app requests fullscreen from the next user gesture, usually the audio start click
 - a watchdog reloads if the render heartbeat stalls
 - runtime errors and unhandled promise rejections trigger a recovery reload

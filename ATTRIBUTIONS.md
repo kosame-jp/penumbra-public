@@ -42,7 +42,8 @@ test coverage. They are not production global datasets.
 
 | Font | Current Use | Attribution / Notes |
 |---|---|---|
-| Cormorant SC Regular / Medium Latin subsets | `?stream` lower-center wordmark | Designed by Christian Thalmann / Catharsis Fonts. The bundled Latin subsets are served from `public/fonts/cormorant-sc-regular-latin.woff2` and `public/fonts/cormorant-sc-medium-latin.woff2` under the SIL Open Font License 1.1. |
+| JetBrains Mono Variable | Production entry and `?stream` lower-center wordmarks | Designed by JetBrains. The bundled variable font is served from `public/fonts/jetbrains-mono-variable.ttf` under the SIL Open Font License 1.1. |
+| Cormorant SC Regular / Medium Latin subsets | Legacy bundled asset, currently unused by runtime UI | Designed by Christian Thalmann / Catharsis Fonts. The bundled Latin subsets are served from `public/fonts/cormorant-sc-regular-latin.woff2` and `public/fonts/cormorant-sc-medium-latin.woff2` under the SIL Open Font License 1.1. |
 
 ## Tuning Kernels
 

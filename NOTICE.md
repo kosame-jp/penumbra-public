@@ -20,7 +20,7 @@ full upstream license texts distributed by each dependency.
 | astronomy-engine | 2.1.19 | MIT | Astronomy calculations |
 | Ajv | 8.20.0 | MIT | JSON Schema validation |
 | ajv-formats | 3.0.1 | MIT | JSON Schema format validation |
-| Cormorant SC Regular / Medium Latin subsets | v19 | SIL Open Font License 1.1 | Stream-mode wordmark typography |
+| JetBrains Mono Variable | bundled local asset | SIL Open Font License 1.1 | Production entry and stream-mode wordmark typography |
 
 ## Development And Verification Dependencies
 

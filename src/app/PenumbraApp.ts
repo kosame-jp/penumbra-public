@@ -59,7 +59,7 @@ const SERVER_CLOCK_SYNC_ENDPOINT = "/__penumbra-time";
 const PRODUCTION_UI_IDLE_DELAY_MS = 8_000;
 const PRODUCTION_ENTRY_FADE_MS = 900;
 const LOGO_FONT_LOAD_TIMEOUT_MS = 1_800;
-const LOGO_FONT_FACE = '500 30px "Cormorant SC"';
+const LOGO_FONT_FACE = '500 30px "JetBrains Mono"';
 
 export class PenumbraApp {
   private readonly root: HTMLElement;
@@ -1011,7 +1011,7 @@ function createStreamTitleElement(): HTMLElement {
   const title = document.createElement("div");
   title.className = "penumbra__stream-title";
   title.setAttribute("aria-hidden", "true");
-  title.textContent = "penumbra";
+  title.textContent = "PENUMBRA";
   return title;
 }
 
@@ -1026,7 +1026,7 @@ function createProductionEntryElement(): {
   const button = document.createElement("button");
   button.className = "penumbra__entry-button";
   button.type = "button";
-  button.textContent = "penumbra";
+  button.textContent = "PENUMBRA";
   button.dataset.state = "idle";
 
   overlay.append(button);
@@ -1095,7 +1095,7 @@ function loadPenumbraLogoFont(): Promise<void> {
     return Promise.resolve();
   }
 
-  return document.fonts.load(LOGO_FONT_FACE, "penumbra").then(() => undefined);
+  return document.fonts.load(LOGO_FONT_FACE, "PENUMBRA").then(() => undefined);
 }
 
 interface PenumbraPerformanceProbe {

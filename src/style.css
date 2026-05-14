@@ -13,59 +13,11 @@
 }
 
 @font-face {
-  font-family: "Cormorant SC";
+  font-family: "JetBrains Mono";
   font-style: normal;
-  font-weight: 400;
+  font-weight: 100 800;
   font-display: swap;
-  src: url("/fonts/cormorant-sc-regular-latin.woff2") format("woff2");
-  unicode-range:
-    U+0000-00FF,
-    U+0131,
-    U+0152-0153,
-    U+02BB-02BC,
-    U+02C6,
-    U+02DA,
-    U+02DC,
-    U+0304,
-    U+0308,
-    U+0329,
-    U+2000-206F,
-    U+20AC,
-    U+2122,
-    U+2191,
-    U+2193,
-    U+2212,
-    U+2215,
-    U+FEFF,
-    U+FFFD;
-}
-
-@font-face {
-  font-family: "Cormorant SC";
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url("/fonts/cormorant-sc-medium-latin.woff2") format("woff2");
-  unicode-range:
-    U+0000-00FF,
-    U+0131,
-    U+0152-0153,
-    U+02BB-02BC,
-    U+02C6,
-    U+02DA,
-    U+02DC,
-    U+0304,
-    U+0308,
-    U+0329,
-    U+2000-206F,
-    U+20AC,
-    U+2122,
-    U+2191,
-    U+2193,
-    U+2212,
-    U+2215,
-    U+FEFF,
-    U+FFFD;
+  src: url("/fonts/jetbrains-mono-variable.ttf") format("truetype");
 }
 
 * {
@@ -348,14 +300,14 @@ body {
   left: 50%;
   bottom: max(28px, env(safe-area-inset-bottom));
   z-index: 3;
-  padding-left: 0.44em;
+  padding-left: 0.18em;
   color: color-mix(in srgb, var(--penumbra-ui-text) 68%, #9db9d0 20%);
-  font: 500 18px/1 "Cormorant SC", "Iowan Old Style", Baskerville, Georgia, serif;
+  font: 500 18px/1 "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-feature-settings:
     "tnum" 1,
     "zero" 1;
   font-variant-numeric: tabular-nums slashed-zero;
-  letter-spacing: 0.44em;
+  letter-spacing: 0.18em;
   opacity: 0;
   pointer-events: none;
   text-rendering: geometricPrecision;
@@ -368,8 +320,8 @@ body {
   .penumbra__stream-title {
     bottom: max(24px, env(safe-area-inset-bottom));
     font-size: 16px;
-    letter-spacing: 0.38em;
-    padding-left: 0.38em;
+    letter-spacing: 0.18em;
+    padding-left: 0.18em;
   }
 }
 
@@ -385,13 +337,14 @@ body {
 }
 
 .penumbra__entry-button {
-  padding: 0 0 0 0.46em;
+  padding: 0 0 0 0.18em;
   border: 0;
   background: transparent;
   color: color-mix(in srgb, var(--penumbra-ui-text) 78%, #a9bfd0 14%);
   cursor: pointer;
-  font: 500 30px/1 "Cormorant SC", "Iowan Old Style", Baskerville, Georgia, serif;
-  letter-spacing: 0.46em;
+  font: 500 clamp(40px, 6.2vw, 78px) / 1 "JetBrains Mono", ui-monospace, SFMono-Regular,
+    Menlo, Consolas, monospace;
+  letter-spacing: 0.18em;
   opacity: 0;
   text-rendering: geometricPrecision;
   text-shadow:
@@ -467,9 +420,9 @@ body {
 
 @media (max-width: 620px) {
   .penumbra__entry-button {
-    padding-left: 0.38em;
-    font-size: 24px;
-    letter-spacing: 0.38em;
+    padding-left: 0.18em;
+    font-size: clamp(34px, 10vw, 48px);
+    letter-spacing: 0.18em;
   }
 }
 
