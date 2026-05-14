@@ -29,7 +29,7 @@ export async function inspectGfsCloudSource(options = {}) {
   return fetchGfsCloudCoverSequencePlan({
     date: cycle.date,
     cycleHour: cycle.cycleHour,
-    forecastHours: options.forecastHours ?? [0, 3, 6, 9],
+    forecastHours: options.forecastHours ?? [0, 3, 6, 9, 12, 15],
     baseUrl: options.baseUrl ?? DEFAULT_GFS_AWS_BASE_URL,
     fetchText: options.fetchText,
   });
@@ -107,7 +107,7 @@ function printHelp() {
 Options:
   --date <YYYYMMDD>           GFS cycle date. Default: latest available cycle by UTC latency.
   --cycle <00|06|12|18>       GFS cycle hour. Default: latest available cycle by UTC latency.
-  --forecast-hours <csv>      Forecast hour offsets. Default: 0,3,6,9
+  --forecast-hours <csv>      Forecast hour offsets. Default: 0,3,6,9,12,15
   --base-url <url>            GFS object base URL. Default: ${DEFAULT_GFS_AWS_BASE_URL}
   --latency-hours <hours>     Cycle availability lag for automatic cycle selection. Default: ${DEFAULT_GFS_CYCLE_LATENCY_HOURS}
   --json                      Print the complete source plan as JSON.

@@ -54,6 +54,10 @@ describe("stream mode", () => {
     expect(parseQueryFlags("?contact=1deg").contactGrid).toBe("1deg");
     expect(resolveAppMode(parseQueryFlags("?cloud=scanline")).cloudAtlas).toBe("scanline");
     expect(resolveAppMode(parseQueryFlags("?cloud=forecast")).cloudAtlas).toBe("forecast");
+    expect(resolveAppMode(parseQueryFlags("")).liveWeatherFallback).toBe(false);
+    expect(resolveAppMode(parseQueryFlags("?weather=live")).liveWeatherFallback).toBe(true);
+    expect(resolveAppMode(parseQueryFlags("?live-weather=1")).liveWeatherFallback).toBe(true);
+    expect(resolveAppMode(parseQueryFlags("?live-weather=0")).liveWeatherFallback).toBe(false);
     expect(resolveAppMode(parseQueryFlags("?debug&cloud-diagnostic")).cloudDiagnostic).toBe(true);
     expect(resolveAppMode(parseQueryFlags("?cloud-diagnostic")).cloudDiagnostic).toBe(false);
     expect(resolveAppMode(parseQueryFlags("?fallback-demo=cloud,audio")).fallbackDemo).toEqual([

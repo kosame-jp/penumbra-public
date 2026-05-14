@@ -109,19 +109,19 @@
 
 現行 bridge:
 - `npm run precompute:cloud-atlas:forecast-openmeteo`
-- Open-Meteo hourly `cloud_cover` を 10° anchor grid で取得し、`f000`, `f003`, `f006`, `f009` 相当の 1° atlas を生成する
+- Open-Meteo hourly `cloud_cover` を 10° anchor grid で取得し、`f000`, `f003`, `f006`, `f009`, `f012`, `f015` 相当の 1° atlas を生成する
 - `?cloud=forecast` で `/data/cloud-atlas.forecast/manifest.json` を読む
 - artifact の write / manifest publish / versioned frame retention は `scripts/precompute/cloud-atlas-forecast-artifacts.mjs` に分離する。Open-Meteo bridge と GFS adapter は、最終的に同じ publisher に `values` / optional `opticalDensityValues` / optional `precipitationValues` / `validAtUtc` / source metadata を渡す。
 - npm script は `--atomic-publish --retain-generations 8` を使う。各 frame は生成時刻 prefix 付きの versioned URL として先に書き、最後に `manifest.json` を atomic rename で置き換える。これにより、配信中のブラウザが「新 manifest だが frame がまだ未生成」という半端な状態を読みづらくする。古い versioned frame は8世代だけ残し、それ以前は生成完了後に削除する。
 - `npm run check:cloud-atlas:forecast` は manifest schema、参照 frame の存在、frame schema、`validAtUtc` の単調増加、manifest / frame の時刻一致、grid shape 一致を検査する。GFS adapter へ差し替える時もこのチェックを通す。
-- `npm run check:cloud-atlas:ops` は現在 UTC が forecast sequence の frame span または 6h hold window に入っているかを検査する。`docs/cloud-atlas-operations.md` を運用 runbook とし、stale / future / empty forecast は runtime でも visual cloud layer を空にする。
+- `npm run check:cloud-atlas:ops` は現在 UTC が forecast sequence の frame span または 9h hold window に入っているかを検査する。`docs/cloud-atlas-operations.md` を運用 runbook とし、stale / future / empty forecast は runtime でも visual cloud layer を空にする。
 - `npm run precompute:cloud-atlas:forecast-gfs:0p5:ops` は同じ forecast hours を 0.5° grid で生成する visual resolution experiment。音の mapping / sounding rule は変えないが、同じ artifact に含まれる PRATE channel も 0.5° grid になるため、雨 band の source data density は増える。
 - browser runtime は manifest を定期的に再読込し、内容が変わった時は旧 sequence と新 sequence を shader 内で crossfade する。frame 間補間で forecast hour の段差を消し、manifest 更新時の段差も `transitionDurationMinutes` で滑らかにする。
 - Open-Meteo bridge は本番 gridded model ingestion へ移るまでの暫定経路。本番 GFS 化では manifest / frame contract を保ち、生成元だけを NOAA GFS などの配布済み gridded artifact に差し替える。
 - GFS source planner として `scripts/precompute/gfs-cloud-source.mjs` を追加した。これは NOAA/NODD の `noaa-gfs-bdp-pds` bucket にある `gfs.YYYYMMDD/CC/atmos/gfs.tCCz.pgrb2.0p25.fFFF.idx` を読み、`TCDC:entire atmosphere`, `CWAT:entire atmosphere (considered as a single layer)`, `PRATE:surface` の message を選び、GRIB2 byte range と `validAtUtc` を確定する。`npm run inspect:gfs-cloud-source` はこの plan を確認するためのネットワーク診断。
 - `npm run precompute:cloud-atlas:forecast-gfs` は source planner が選んだ byte range だけを取得し、`wgrib2 -no_header -text` で cloud-cover grid、cloud-water grid、precipitation-rate grid を decode する。TCDC は 1° `uint8-cloud-cover-pct` values へ resample し、CWAT は 1° resample 後に上位 percentile を基準に `uint8-cloud-water-density-proxy-pct` へ正規化する。PRATE は mm/hour 相当へ変換して `uint8-precipitation-activity-pct` へ正規化し、runtime では sunrise Gaussian band 内の rain granular / rain visual driver にだけ使う。Runtime 側ではこの PRATE channel から trace rain を直接鳴らさず、強い雨 gate を通った activity だけを rain granular / rain visual に渡す。`wgrib2` がない環境では明示的に失敗する。ブラウザ runtime に `wgrib2` は不要で、これは artifact 生成環境だけの依存。
 - Runtime の scale mode selection は、browser-local live weather ではなく、この forecast sequence の `TCDC` / `CWAT` / `PRATE` を現在 UTC で frame 補間した共有値を読む。値は mode 用に 0.05 単位へ量子化され、`CWAT` は relative humidity ではなく atmospheric wetness proxy として扱う。これにより mode は日ごとに変化し得るが、同じ `activeCycleUtc` / `validAtUtc` artifact を読む browser 間では同じ選択になる。現行 artifact は wind / temperature を含まないため、mode selection でもそれらは使わない。
-- Runtime production は、fresh/current/hold の forecast sequence がある間、scanline weather sample も同じ共有 artifact から合成する。`TCDC` は `cloudCoverPct`、`CWAT` と TCDC の混合は `relativeHumidityPct` proxy、`PRATE` は `precipitationMm` proxy へ写像する。現行 artifact には実 wind / temperature がないため、`windSpeedMps` は local cloud gradient / wetness / precipitation から作る deterministic texture proxy、`temperatureC` は canonical default を使う。これにより公開 runtime は Open-Meteo point API を各ブラウザから大量に叩かない。Forecast が使えない時だけ、既存の Open-Meteo scanline-local cache が fallback として残る。
+- Runtime production は、fresh/current/hold の forecast sequence がある間、scanline weather sample も同じ共有 artifact から合成する。`TCDC` は `cloudCoverPct`、`CWAT` と TCDC の混合は `relativeHumidityPct` proxy、`PRATE` は `precipitationMm` proxy へ写像する。現行 artifact には実 wind / temperature がないため、`windSpeedMps` は local cloud gradient / wetness / precipitation から作る deterministic texture proxy、`temperatureC` は canonical default を使う。これにより公開 runtime は Open-Meteo point API を各ブラウザから大量に叩かない。Forecast が使えない時、production は Open-Meteo へ自動 fallback せず、canonical default weather samples で継続する。旧 scanline-local Open-Meteo cache は `?weather=live` / `?live-weather=1` の明示 diagnostic 経路としてのみ残る。
 - NOMADS の旧 OPeNDAP 形式は 2025 年の service change で retired されているため、本番 GFS path は OPeNDAP ASCII ではなく、AWS/NODD の GRIB2 + index + decoder を前提にする。
 
 ### tuning-kernels.json
@@ -256,7 +256,7 @@ v1 方針:
 - 起動時に bundled earthquake fixture を quake store へ seed する。
 - その後、USGS `all_day.geojson` を 2分間隔で poll し、magnitude threshold をかけずに merge する。
 - quake store は 81分窓 + 9分 margin を過ぎた event を stale eviction する。
-- Open-Meteo は現在の sunrise terminator 上の緯度 sample から最寄り worldgrid cell を求め、その cell だけを 30分間隔で cache する。
+- 明示 diagnostic の Open-Meteo は現在の sunrise terminator 上の緯度 sample から最寄り worldgrid cell を求め、その cell だけを 30分間隔で cache する。
 - weather API が失敗した cell は canonical fusion 側で `DEFAULT_WEATHER_SAMPLE` に戻る。API 失敗は音響・視覚・時刻進行を止めない。
 - external API から得た値も bundled fixture と同じ `createCanonicalScanlineSamples` の入力に入り、audio / visual は同じ canonical sample object を読む。
 - Nightlight は中心線 sample に加えて sunrise terminator の Gaussian band 内にある bundled worldgrid cell から contact sample を追加する。これにより human musical layer は中心線一点ではなく、現在は `sigma = 7°` の到来 / 通過 / 離脱として動く。

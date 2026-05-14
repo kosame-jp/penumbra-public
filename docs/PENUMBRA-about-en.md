@@ -105,7 +105,7 @@ The work does not change. Earth changes. The work simply continues to run.
 
 ## Technical notes
 
-PENUMBRA runs entirely in your browser. No server holds the state. The work calculates the sunrise terminator's position from the current UTC time and Earth's axial tilt, and renders the resulting sound and visuals locally. Real-time earthquake data is fetched from the United States Geological Survey. Cloud, atmospheric wetness, and precipitation are read from a shared NOAA GFS forecast artifact; Open-Meteo may be used only as a scanline-local fallback when that artifact is unavailable. All other data — elevation, ocean depth, OpenStreetMap features, night lights, tuning kernels — is bundled with the work itself.
+PENUMBRA runs entirely in your browser. No server holds the state. The work calculates the sunrise terminator's position from the current UTC time and Earth's axial tilt, and renders the resulting sound and visuals locally. Real-time earthquake data is fetched from the United States Geological Survey. Cloud, atmospheric wetness, and precipitation are read from a shared NOAA GFS forecast artifact; Open-Meteo is not used in the public default runtime and remains only as a diagnostic fallback path. All other data — elevation, ocean depth, OpenStreetMap features, night lights, tuning kernels — is bundled with the work itself.
 
 The work is designed to continue running for as long as the browser supports it, as long as the data sources remain available, and as long as Earth turns. I hope for at least the third condition.
 
@@ -117,7 +117,7 @@ The work is open source under AGPL-3.0. The source code is available at [reposit
 
 - **USGS Earthquake Hazards Program** — earthquake data
 - **NOAA Global Forecast System (GFS)** — cloud, cloud-water, and precipitation forecast artifacts
-- **Open-Meteo** — fallback scanline-local weather data
+- **Open-Meteo** — diagnostic fallback scanline-local weather data
 - **NASA Blue Marble** — base imagery (where used)
 - **NASA SRTM** — terrain elevation
 - **GEBCO** — ocean bathymetry

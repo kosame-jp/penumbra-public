@@ -24,8 +24,8 @@ npm run precompute:cloud-atlas:forecast-gfs:0p5:ops
 2. Validate manifest/frame shape with `npm run check:cloud-atlas:forecast`.
 3. Validate operational freshness with `npm run check:cloud-atlas:ops`.
 
-The default GFS build publishes `f000`, `f003`, `f006`, and `f009` frames at 1 degree. The
-experimental `0p5` build publishes the same forecast hours at 0.5 degree. Both write versioned frame
+The default GFS build publishes `f000`, `f003`, `f006`, `f009`, `f012`, and `f015` frames at 1 degree.
+The experimental `0p5` build publishes the same forecast hours at 0.5 degree. Both write versioned frame
 URLs first, then atomically replace `manifest.json`. Eight prior generations are retained so
 browsers holding the previous manifest can still resolve its frames.
 
@@ -76,7 +76,7 @@ derives canonical state from UTC and the shared static artifacts.
 
 Production forecast artifacts should be published to a public R2 bucket or R2 custom domain. Use
 Cloudflare R2 Standard storage, not Infrequent Access. The current 0.5 degree GFS sequence is about
-7-8 MB per generated forecast generation. The precompute script retains eight versioned generations
+11-12 MB per generated forecast generation. The precompute script retains eight versioned generations
 locally; the workflow stages only `manifest.json` plus versioned `YYYYMMDDTHHMMSSZ-fNNN.json` frames
 and runs `aws s3 sync --delete`, so old R2 objects are removed automatically. Manual cleanup should
 not be necessary.
@@ -89,6 +89,8 @@ data/cloud-atlas.forecast/YYYYMMDDTHHMMSSZ-f000.json
 data/cloud-atlas.forecast/YYYYMMDDTHHMMSSZ-f003.json
 data/cloud-atlas.forecast/YYYYMMDDTHHMMSSZ-f006.json
 data/cloud-atlas.forecast/YYYYMMDDTHHMMSSZ-f009.json
+data/cloud-atlas.forecast/YYYYMMDDTHHMMSSZ-f012.json
+data/cloud-atlas.forecast/YYYYMMDDTHHMMSSZ-f015.json
 ```
 
 Repository variables:
@@ -122,21 +124,24 @@ is absent.
 ## Freshness
 
 Forecast frames are usable while current UTC is between the first and last `validAtUtc`.
-After the last frame, PENUMBRA allows a 6 hour hold window. Beyond that window, the forecast
+After the last frame, PENUMBRA allows a 9 hour hold window. Beyond that window, the forecast
 is operationally stale.
 
 Runtime behavior:
 
 - fresh/current sequence: draw the cached cloud shell and linearly interpolate frames by UTC
 - hold window: keep the last available frame rather than hard cutting clouds
-- stale/future/empty sequence: ignore it and leave the visual cloud layer empty; only then may
-  scanline-local Open-Meteo fallback fill live weather cache values
+- stale/future/empty sequence: ignore it and leave the visual cloud layer empty; scanline weather
+  uses bundled canonical defaults until a fresh forecast is available
 - fresh/current/hold sequence: production derives scanline weather samples from the shared GFS
   forecast artifact instead of fanning out browser-local Open-Meteo requests. `TCDC` feeds cloud
   cover, `CWAT` feeds an atmospheric wetness / humidity proxy, and `PRATE` feeds precipitation
   activity. The current artifact does not carry true wind or temperature, so wind is a deterministic
   cloud-gradient texture proxy and temperature remains canonical default. This keeps browser
   instances sharing the same artifact aligned and avoids public runtime 429s from point weather APIs.
+- explicit `?weather=live` or `?live-weather=1`: enable the legacy scanline-local Open-Meteo cache
+  for diagnostics only. Do not use this in public production because every browser instance fans out
+  point requests.
 
 Operational check:
 
@@ -165,5 +170,5 @@ weather semantics.
   manifest only while it is inside the hold window.
 - Partial generation: avoided by atomic manifest publish.
 - Stale deployed artifact: runtime rejects it and shows no visual cloud layer rather than showing
-  old global weather as current. Scanline-local cloud values remain available to audio/rain/debug
-  state, but the old dotted visual fallback is intentionally hidden.
+  old global weather as current. Production does not call Open-Meteo by default; scanline weather
+  uses canonical defaults until the next fresh forecast artifact arrives.

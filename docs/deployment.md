@@ -32,8 +32,8 @@ External runtime sources:
 - USGS all-day GeoJSON feed for earthquakes
 - NOAA GFS cloud forecast artifact, preferably published at
   `VITE_PENUMBRA_CLOUD_FORECAST_MANIFEST_URL`
-- Open-Meteo current weather only as a scanline-local fallback when the shared
-  forecast artifact is unavailable
+- Open-Meteo current weather only as an explicit diagnostic scanline-local
+  fallback via `?weather=live` or `?live-weather=1`
 
 Static generated sources:
 

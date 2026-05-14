@@ -18,6 +18,7 @@ export interface QueryFlags {
   readonly surfaceGrid?: "auto" | "canonical" | "1deg";
   readonly contactGrid?: "auto" | "canonical" | "1deg";
   readonly cloudAtlas?: "scanline" | "atlas" | "forecast" | "fixture";
+  readonly liveWeatherFallback?: boolean;
   readonly cloudDiagnostic?: boolean;
   readonly audioDebug?: AudioDebugMode;
   readonly audioTune?: boolean;
@@ -31,6 +32,7 @@ export function parseQueryFlags(search: string): QueryFlags {
   const surfaceParam = params.get("surface");
   const contactParam = params.get("contact");
   const cloudParam = params.get("cloud");
+  const weatherParam = params.get("weather");
   const tuneParam = params.get("tune");
   const rootParam = params.get("root");
   const captureParam = params.get("capture");
@@ -68,6 +70,8 @@ export function parseQueryFlags(search: string): QueryFlags {
             : cloudParam === "fixture"
               ? "fixture"
               : undefined,
+    liveWeatherFallback:
+      weatherParam === "live" || parseBooleanQueryFlag(params, "live-weather"),
     cloudDiagnostic: params.has("cloud-diagnostic"),
     audioDebug: parseAudioDebugMode(params.get("audio")),
     audioTune: tuneParam === "audio",

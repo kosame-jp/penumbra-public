@@ -542,7 +542,7 @@ export class PenumbraApp {
     options: { readonly usingForecastWeather?: boolean } = {},
   ): void {
     const diagnostics = this.liveData.diagnostics(date);
-    if (options.usingForecastWeather) {
+    if (options.usingForecastWeather || !this.mode.liveWeatherFallback) {
       this.clearFallbackStatus("live-weather-fallback");
     } else if (diagnostics.lastWeatherError) {
       this.setFallbackStatus("live-weather-fallback", { now: date });
@@ -830,7 +830,7 @@ export class PenumbraApp {
       void this.liveData.maybePollQuakes(renderDate);
       this.maybeRefreshCloudAtlasForecast(renderDate);
       this.expireCloudAtlasForecastIfNeeded(renderDate);
-      if (!this.hasForecastWeather(renderDate)) {
+      if (!this.hasForecastWeather(renderDate) && this.mode.liveWeatherFallback) {
         void this.liveData.maybeRefreshWeatherForScanline(scanlineState, this.worldGrid, renderDate);
       }
       this.syncLiveDataFallbackStatuses(renderDate, {
@@ -897,7 +897,11 @@ export class PenumbraApp {
       latitudeDeg: cell.latCenterDeg,
       longitudeDeg: cell.lonCenterDeg,
     });
-    return forecastWeather ?? this.liveData.getWeatherForCell(cellId, date);
+    if (forecastWeather || !this.mode.liveWeatherFallback) {
+      return forecastWeather;
+    }
+
+    return this.liveData.getWeatherForCell(cellId, date);
   }
 
   private maybeRefreshCloudAtlasForecast(date: Date): void {
@@ -955,7 +959,7 @@ export class PenumbraApp {
     }
 
     console.warn(
-      `PENUMBRA cloud atlas forecast expired; falling back to scanline-local clouds. ${freshness.message}`,
+      `PENUMBRA cloud atlas forecast expired; using bundled weather defaults until a fresh forecast is available. ${freshness.message}`,
     );
     this.setFallbackStatus("cloud-forecast-unavailable");
     this.cloudAtlasSequence = undefined;
@@ -982,7 +986,7 @@ export class PenumbraApp {
     if (this.lastCloudAtlasForecastRejectKey !== rejectKey) {
       this.lastCloudAtlasForecastRejectKey = rejectKey;
       console.warn(
-        `PENUMBRA ignored ${phase} cloud atlas forecast; using scanline-local clouds. ${freshness.message}`,
+        `PENUMBRA ignored ${phase} cloud atlas forecast; using bundled weather defaults until a fresh forecast is available. ${freshness.message}`,
       );
     }
     this.setFallbackStatus("cloud-forecast-unavailable");

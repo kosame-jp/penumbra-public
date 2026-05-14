@@ -9,6 +9,7 @@ import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 
 const DEFAULT_MANIFEST_PATH = "public/data/cloud-atlas.forecast/manifest.json";
+const DEFAULT_MAX_HOLD_MS = 9 * 60 * 60 * 1000;
 
 if (isMainModule()) {
   try {
@@ -100,7 +101,7 @@ export async function validateCloudAtlasForecast(
     firstValidAtUtc: firstFrame?.validAtUtc ?? "",
     lastValidAtUtc: lastFrame?.validAtUtc ?? "",
     nowUtcMs: options.nowUtcMs ?? Date.now(),
-    maxHoldMs: options.maxHoldMs ?? 6 * 60 * 60 * 1000,
+    maxHoldMs: options.maxHoldMs ?? DEFAULT_MAX_HOLD_MS,
   });
   if (options.requireCurrent === true && !freshness.usable) {
     throw new Error(`Forecast is not operationally current: ${freshness.message}`);
@@ -273,7 +274,7 @@ Options:
   --require-current  Fail when current UTC is outside the forecast and its hold window
   --now <utc>        UTC instant for freshness checks. Default: current Date.now()
   --max-hold-hours <n>
-                     Allowed hold after the last frame when --require-current is set. Default: 6
+                     Allowed hold after the last frame when --require-current is set. Default: 9
   --quiet            Suppress success output
 `);
 }

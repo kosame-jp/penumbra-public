@@ -28,7 +28,9 @@ healthy.
 - `live-weather-fallback`: a substantial part of a live weather sweep failed, or
   every requested weather cell failed. Isolated request failures remain in
   diagnostics only, because one or two missing cells do not materially degrade
-  the scanline. The affected cells use the canonical default weather sample.
+  the scanline. This path is explicit diagnostic behavior, enabled with
+  `?weather=live` or `?live-weather=1`; public production otherwise uses the
+  shared GFS forecast artifact or canonical default weather samples.
 - `live-quake-fallback`: the live USGS quake request failed. Retained 81-minute
   quake state continues; new quake fetches are paused until recovery.
 - `contact-grid-unavailable`: the 1 degree contact grid is unavailable. Human

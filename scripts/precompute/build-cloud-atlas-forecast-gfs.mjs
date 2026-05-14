@@ -20,7 +20,7 @@ const execFileAsync = promisify(execFile);
 
 const DEFAULT_OUTPUT_DIR = "public/data/cloud-atlas.forecast";
 const DEFAULT_RESOLUTION_DEG = 1;
-const DEFAULT_FORECAST_HOURS = [0, 3, 6, 9];
+const DEFAULT_FORECAST_HOURS = [0, 3, 6, 9, 12, 15];
 const DEFAULT_RETAIN_GENERATIONS = 0;
 const DEFAULT_WGRIB2_BIN = "wgrib2";
 const GFS_SOURCE_RESOLUTION_DEG = 0.25;

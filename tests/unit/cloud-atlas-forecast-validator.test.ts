@@ -67,6 +67,34 @@ describe("cloud atlas forecast validator", () => {
     });
   });
 
+  it("uses the 9 hour production hold window by default", async () => {
+    const { validateCloudAtlasForecast } = await importValidator();
+    const root = mkdtempSync(join(tmpdir(), "penumbra-cloud-forecast-validator-"));
+    const manifestPath = writeForecastFixture(root, [
+      {
+        url: "f000.json",
+        validAtUtc: "2026-05-06T06:00:00.000Z",
+        values: [0, 10, 20, 30],
+      },
+      {
+        url: "f015.json",
+        validAtUtc: "2026-05-06T21:00:00.000Z",
+        values: [40, 50, 60, 70],
+      },
+    ]);
+
+    const result = await validateCloudAtlasForecast(manifestPath, {
+      requireCurrent: true,
+      nowUtcMs: Date.parse("2026-05-07T05:30:00.000Z"),
+    });
+
+    expect(result.freshness).toMatchObject({
+      status: "hold",
+      usable: true,
+      maxHoldMs: 9 * 60 * 60 * 1000,
+    });
+  });
+
   it("rejects operationally stale forecasts when required", async () => {
     const { validateCloudAtlasForecast } = await importValidator();
     const root = mkdtempSync(join(tmpdir(), "penumbra-cloud-forecast-validator-"));

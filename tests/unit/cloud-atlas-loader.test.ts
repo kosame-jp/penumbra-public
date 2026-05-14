@@ -153,6 +153,28 @@ describe("cloud atlas loader", () => {
     expect(freshness.holdMs).toBe(2.5 * 60 * 60 * 1000);
   });
 
+  it("uses a 9 hour default hold for production forecast sequences", () => {
+    const sequence = cloudAtlasSequence([
+      "2026-05-06T06:00:00.000Z",
+      "2026-05-06T21:00:00.000Z",
+    ]);
+
+    expect(
+      cloudAtlasSequenceFreshness(sequence, Date.parse("2026-05-07T05:59:00.000Z")),
+    ).toMatchObject({
+      status: "hold",
+      usable: true,
+      maxHoldMs: 9 * 60 * 60 * 1000,
+    });
+    expect(
+      cloudAtlasSequenceFreshness(sequence, Date.parse("2026-05-07T06:01:00.000Z")),
+    ).toMatchObject({
+      status: "stale",
+      usable: false,
+      maxHoldMs: 9 * 60 * 60 * 1000,
+    });
+  });
+
   it("rejects stale or future forecast sequences for runtime use", () => {
     const sequence = cloudAtlasSequence([
       "2026-05-06T06:00:00.000Z",

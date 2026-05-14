@@ -94,7 +94,7 @@ export const DEFAULT_CLOUD_ATLAS_URL = "/data/cloud-atlas.current.json";
 export const DEFAULT_CLOUD_ATLAS_FORECAST_MANIFEST_URL =
   configuredCloudAtlasForecastManifestUrl() ?? "/data/cloud-atlas.forecast/manifest.json";
 export const FIXTURE_CLOUD_ATLAS_URL = "/data/fixtures/cloud-atlas.provisional.json";
-export const DEFAULT_CLOUD_ATLAS_FORECAST_MAX_HOLD_MS = 6 * 60 * 60 * 1000;
+export const DEFAULT_CLOUD_ATLAS_FORECAST_MAX_HOLD_MS = 9 * 60 * 60 * 1000;
 
 const cloudAtlasDistributionStatsCache = new WeakMap<CloudAtlas, CloudAtlasDistributionStats>();
 const cloudAtlasOpticalDensityDistributionStatsCache =
@@ -106,7 +106,7 @@ export async function loadCloudAtlas(url = DEFAULT_CLOUD_ATLAS_URL): Promise<Clo
   try {
     return parseCloudAtlas(await loadJson<unknown>(url), url);
   } catch (error) {
-    console.warn(`Failed to load cloud atlas ${url}; using scanline-local clouds.`, error);
+    console.warn(`Failed to load cloud atlas ${url}; leaving cached cloud shell empty.`, error);
     return undefined;
   }
 }
@@ -140,7 +140,7 @@ export async function loadCloudAtlasSequence(
       frames: frames.sort((left, right) => left.validAtMs - right.validAtMs),
     };
   } catch (error) {
-    console.warn(`Failed to load cloud atlas sequence ${manifestUrl}; using scanline-local clouds.`, error);
+    console.warn(`Failed to load cloud atlas sequence ${manifestUrl}; leaving cached cloud shell empty.`, error);
     return undefined;
   }
 }

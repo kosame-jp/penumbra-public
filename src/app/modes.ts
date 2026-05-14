@@ -40,6 +40,7 @@ export interface AppMode {
   readonly surfaceGrid: "auto" | "canonical" | "1deg";
   readonly contactGrid: "auto" | "canonical" | "1deg";
   readonly cloudAtlas: "scanline" | "atlas" | "forecast" | "fixture";
+  readonly liveWeatherFallback: boolean;
   readonly cloudDiagnostic: boolean;
   readonly earthRootWidget: boolean;
   readonly performanceProfile: PerformanceProfile;
@@ -77,6 +78,7 @@ export function resolveAppMode(flags: QueryFlags, hints: DevicePerformanceHints 
     surfaceGrid: flags.surfaceGrid ?? "auto",
     contactGrid: flags.contactGrid ?? "auto",
     cloudAtlas: flags.cloudAtlas ?? "forecast",
+    liveWeatherFallback: Boolean(flags.liveWeatherFallback),
     cloudDiagnostic: flags.debug && Boolean(flags.cloudDiagnostic),
     earthRootWidget: Boolean(flags.earthRootWidget) || (flags.debug && !audioTuning),
     performanceProfile,
