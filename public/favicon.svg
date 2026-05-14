@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="PENUMBRA">
+  <defs>
+    <clipPath id="earth-disc">
+      <circle cx="32" cy="32" r="30" />
+    </clipPath>
+    <linearGradient id="day-blue" x1="18" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2a78c7" />
+      <stop offset="0.58" stop-color="#155aa1" />
+      <stop offset="1" stop-color="#0c3768" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" fill="none" />
+  <g clip-path="url(#earth-disc)">
+    <rect width="64" height="64" fill="#02060b" />
+    <polygon points="18,0 64,0 64,64 46,64" fill="url(#day-blue)" />
+  </g>
+  <circle cx="32" cy="32" r="30" fill="none" stroke="#12304a" stroke-width="1.5" />
+</svg>
